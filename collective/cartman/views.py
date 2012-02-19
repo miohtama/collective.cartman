@@ -42,7 +42,7 @@ class ProductDataExtractor(grok.CodeView):
             # Not avail in portal root, Dexterity 1.0
             return None
 
-        data["title"] = self.context.Title()
+        data["name"] = self.context.Title()
         data["url"] = self.context.absolute_url()
         data["description"] = self.context.Description()
         data["price"] = 5.0 # XXX: Use dummy price

@@ -68,7 +68,9 @@ to the page body.
                         <input data-bind="count" min="0" type="number" val="" />
                         </td>
                         <td data-bind="total" class="column-total"></td>
-                        <td class=column-remove><i class="icon-remove"></i></td>
+                        <td class=column-remove>
+                            <span style="color: red">x</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>

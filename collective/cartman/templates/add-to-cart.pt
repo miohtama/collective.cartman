@@ -2,17 +2,17 @@
     tal:attributes="data-product view/json"
     class="product">
 
-    <h2 tal:content="view/data/title" />
+    <h2 tal:content="view/data/name|nothing" />
 
-    <div class="product-image-wrapper" tal:condition="view/data/img">
+    <div class="product-image-wrapper" tal:condition="view/data/img|nothing">
         <img tal:attributes="url view/data/img" class="product-image" />
     </div>
 
-    <p tal:content="view/data/description" />
+    <p tal:content="view/data/description|nothing" />
 
     <form class="well form-inline">
         <p>
-            Price <strong tal:content="view/data/price" />
+            Price <strong tal:content="view/data/price|nothing" />
             EUR
         </p>
         <input type="number" value="1" class="add-count" />
