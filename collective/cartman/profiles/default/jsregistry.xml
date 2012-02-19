@@ -2,18 +2,23 @@
 <object name="portal_javascripts">
 
     <javascript
-        id="++resource++eric.cartman/store+json2.min.js"
+        id="++resource++collective.cartman/cartman/store+json2.min.js"
         cacheable="True" compression="none" cookable="True"
         enabled="True" expression=""  inline="False" insert-after="toc.js"/>
 
     <javascript
-        id="++resource++eric.cartman/jquery.transparency.min.js"
+        id="++resource++collective.cartman/cartman/jquery.transparency.min.js"
         cacheable="True" compression="none" cookable="True"
         enabled="True" expression=""  inline="False" insert-after="toc.js"/>
 
     <javascript
-        id="++resource++eric.cartman/jquery.transparency.min.js"
+        id="++resource++collective.cartman/cartman/jquery.transparency.min.js"
         cacheable="True" compression="none" cookable="True"
+        enabled="True" expression=""  inline="False" insert-after="toc.js"/>
+
+    <javascript
+        id="++resource++collective.cartman/cartman-plone.js"
+        cacheable="True" compression="safe" cookable="True"
         enabled="True" expression=""  inline="False" insert-after="toc.js"/>
 
 

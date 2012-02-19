@@ -14,11 +14,11 @@
 
   <genericsetup:registerProfile
       name="default"
-      title="eric.cartman"
+      title="collective.cartman"
       directory="profiles/default"
-      description="Installs the eric.cartman package"
+      description="Eric Cartman shopping cart support"
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
   <!-- -*- extra stuff goes here -*- -->
-  
+
 </configure>
