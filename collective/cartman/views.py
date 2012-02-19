@@ -6,28 +6,23 @@
 import json
 
 from zope.interface import Interface
-from zope.component import getMultiAdapter
+from zope.component import getMultiAdapter, queryMultiAdapter
 from five import grok
-
-# Plone imports
-from plone.app.layout.viewlets.interfaces import IHtmlHead
-from plone.app.layout.viewlets.interfaces import IPortalHeader
-from plone.app.layout.viewlets.interfaces import IPortalFooter
 
 from utils import has_mini_cart
 
 grok.templatedir("templates")
-grok.context(Interface)
 
 class ProductDataExtractor(grok.CodeView):
     """
-    This view will extract JSON information from Plone content
-    for Eric Cartman to be consumed.
+    This view will extract product data and JSON information from Plone content
+    for the shopping cart to be consumed.
 
     Override this view for your own products.
     """
 
     grok.name("product-data-extractor")
+    grok.context(Interface)
 
     def getData(self):
         """
@@ -41,11 +36,17 @@ class ProductDataExtractor(grok.CodeView):
         """
         data = {}
 
-        data["id"] = self.context.UID()
+        if hasattr(self.context, "UID"):
+            data["id"] = self.context.UID() # Stock keeping id
+        else:
+            # Not avail in portal root, Dexterity 1.0
+            return None
+
         data["title"] = self.context.Title()
-        data["title"] = self.context.Description()
+        data["url"] = self.context.absolute_url()
+        data["description"] = self.context.Description()
         data["price"] = 5.0 # XXX: Use dummy price
-        data["img"] = None
+        data["img"] = None # URL for the image to be used in checkout list
 
         return data
 
@@ -66,8 +67,16 @@ class AddToCartHelper(grok.View):
 
     grok.name("add-to-cart-helper")
     grok.template("add-to-cart")
+    grok.context(Interface)
 
     def update(self):
-        extractor = getMultiAdapter((self.request, self.context), "product-data-extractor")
-        self.data = extractor.getData()
-        self.json = extractor.getJSON()
+
+        context = self.context.aq_inner
+
+        extractor = queryMultiAdapter((context, self.request), name="product-data-extractor")
+
+        if extractor:
+            self.data = extractor.getData()
+            self.json = extractor.getJSON()
+        else:
+            self.data = self.json = None

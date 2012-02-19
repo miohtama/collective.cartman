@@ -4,22 +4,27 @@
     <javascript
         id="++resource++collective.cartman/cartman/store+json2.min.js"
         cacheable="True" compression="none" cookable="True"
-        enabled="True" expression=""  inline="False" insert-after="toc.js"/>
+        enabled="True" expression=""  inline="False" />
 
     <javascript
         id="++resource++collective.cartman/cartman/jquery.transparency.min.js"
         cacheable="True" compression="none" cookable="True"
-        enabled="True" expression=""  inline="False" insert-after="toc.js"/>
+        enabled="True" expression=""  inline="False" />
 
     <javascript
-        id="++resource++collective.cartman/cartman/jquery.transparency.min.js"
+        id="++resource++collective.cartman/cartman/cartman.js"
         cacheable="True" compression="none" cookable="True"
-        enabled="True" expression=""  inline="False" insert-after="toc.js"/>
+        enabled="True" expression=""  inline="False" />
+
+    <javascript
+        id="++resource++collective.cartman/cartman/cartman-ui.js"
+        cacheable="True" compression="none" cookable="True"
+        enabled="True" expression=""  inline="False" />
 
     <javascript
         id="++resource++collective.cartman/cartman-plone.js"
         cacheable="True" compression="safe" cookable="True"
-        enabled="True" expression=""  inline="False" insert-after="toc.js"/>
+        enabled="True" expression=""  inline="False" />
 
 
 </object>

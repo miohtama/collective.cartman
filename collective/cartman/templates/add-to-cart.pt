@@ -1,12 +1,18 @@
-<div tal:condition="view/data" tal:attributes="data-product view/json" class="product">
+<div tal:condition="python:view.data"
+    tal:attributes="data-product view/json"
+    class="product">
+
     <h2 tal:content="view/data/title" />
-    <div class="product-image-wrapper">
-        <img tal:attributes="url view/img" class="product-image" />
+
+    <div class="product-image-wrapper" tal:condition="view/data/img">
+        <img tal:attributes="url view/data/img" class="product-image" />
     </div>
+
     <p tal:content="view/data/description" />
+
     <form class="well form-inline">
         <p>
-            Price <strong tal:content="view/data/price">
+            Price <strong tal:content="view/data/price" />
             EUR
         </p>
         <input type="number" value="1" class="add-count" />
@@ -15,4 +21,5 @@
             Add to cart
         </button>
     </form>
+
 </div>

@@ -4,20 +4,27 @@
 
 /*global Cartman,CartmanUI*/
 
-(function(jQuery) {
+(function($) {
 
     "use strict";
 
-    var cartman = new Cartman();
-    var ui = new CartmanUI({
-        cartman : cartman
+    $(document).ready(function() {
+
+        var cartman = new Cartman();
+        var ui = new CartmanUI({
+            cartman : cartman,
+            selectors : {
+                addToCartAnimator : "button"
+            }
+        });
+
+        // Bootstrap UI
+        ui.init();
+
+        // Load cart from localStorage,
+        cartman.refreshStore();
+
     });
-
-    // Bootstrap UI
-    ui.init();
-
-    // Load cart from localStorage,
-    cartman.refreshStore();
 
 })(jQuery);
 

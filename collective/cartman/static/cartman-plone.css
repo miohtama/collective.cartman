@@ -1,0 +1,134 @@
+input[type=number] {
+        height: 26px;
+}
+
+#mini-cart .btn {
+        margin-left: 10px;
+        margin-bottom: 5px;
+}
+
+/* From http://flowplayer.org/tools/demos/overlay/index.html */
+
+/* the overlayed element */
+.simple-overlay {
+
+        /* must be initially hidden */
+        display: none;
+        /* place overlay on top of other elements */
+        z-index: 10000;
+        /* styling */
+        background-color: white;
+        width: 675px;
+        min-height: 200px;
+        border: 1px solid #666;
+        /* CSS3 styling for latest browsers */
+        -moz-box-shadow: 0 0 90px 5px #000;
+        -webkit-box-shadow: 0 0 90px #000;
+}
+/* close button positioned on upper right corner */
+.simple-overlay .close {
+        background-image: url(misc/close.png);
+        position: absolute;
+        right: -15px;
+        top: -15px;
+        cursor: pointer;
+        height: 35px;
+        width: 35px;
+}
+.product-listing {
+        margin: 5px;
+        padding: 5px;
+}
+.product {
+        padding-right: 10px;
+}
+.product:last-child {
+        padding-right: 0;
+}
+.product form {
+}
+
+.product-image-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+    height: 210px;
+}
+
+.product-image {
+        max-width: 150px;
+        margin: 10px auto;
+        display: block;
+}
+.add-count {
+        text-align: right;
+        width: 50px;
+}
+
+#checkout-popup {
+        padding: 15px;
+}
+.checkout-list {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #eee;
+        margin-bottom: 20px;
+}
+
+table.checkout-list td,
+table.checkout-list thead th {
+        text-align: left;
+        border: 1px solid #eee;
+        padding: 5px;
+}
+
+table.checkout-list td {
+    vertical-align: middle;
+}
+
+table.checkout-list thead th {
+    vertical-align: top;
+}
+.checkout-list img {
+    max-width: 48px;
+    max-height: 48px;
+}
+
+.checkout-list td.column-price, .checkout-list td.column-total {
+        text-align: right;
+}
+.checkout-list .column-count {
+        text-align: center;
+}
+.checkout-list .column-count input {
+        width: 70px;
+        margin-top: 10px;
+        text-align: center;
+}
+.checkout-list .column-remove {
+        cursor: pointer;
+        color: #a00;
+        text-align: center;
+        font-size: 32px;
+        font-weight: bold;
+        vertical-align: middle;
+}
+.checkout-list .column-remove:hover {
+        background: #fcc;
+}
+.checkout-list .discreet {
+        font-size: 80%;
+        color: #aaa;
+}
+.checkout-footer {
+        text-align: right;
+}
+.checkout-footer .left {
+        float: left;
+}
+.checkout-footer .right {
+        float: right;
+}
+.empty-checkout {
+        text-align: center;
+        margin-top: 40px;
+}

@@ -11,6 +11,8 @@ from five import grok
 from plone.app.layout.viewlets.interfaces import IHtmlHead
 from plone.app.layout.viewlets.interfaces import IPortalHeader
 from plone.app.layout.viewlets.interfaces import IBelowContentTitle
+from plone.app.layout.viewlets.interfaces import IPortalFooter
+from plone.app.layout.viewlets.interfaces import IPortalTop
 
 from utils import has_mini_cart
 
@@ -26,7 +28,7 @@ class MiniCart(grok.Viewlet):
 class CheckoutPopUp(grok.Viewlet):
     """ Pop-up window for checkout """
     grok.context(Interface)
-    grok.viewletmanager(IPortalFooter)
+    grok.viewletmanager(IPortalTop)
     grok.template("checkout-popup")
 
 class ProductData(grok.Viewlet):
@@ -36,13 +38,13 @@ class ProductData(grok.Viewlet):
     grok.template("checkout-popup")
 
 
-class TransparencyTemplates(grok.Viewlet):
+class CartTemplates(grok.Viewlet):
     """
-    Hidden template sources for interactive cart elements
+    Client-side template sources for interactive cart elements
     """
     grok.context(Interface)
     grok.viewletmanager(IPortalFooter)
-    grok.template("cart-transparency-templates")
+    grok.template("cart-templates")
 
 
 class AddToCart(grok.Viewlet):
@@ -55,8 +57,10 @@ class AddToCart(grok.Viewlet):
     grok.viewletmanager(IBelowContentTitle)
 
     def render(self):
-        view = queryMultiAdapter((self.context, self.request), "add-to-cart-helper")
+        view = queryMultiAdapter((self.context, self.request), name="add-to-cart-helper")
+
         if view:
             return view()
         else:
+            # Don't break every page in the case of installation errors
             return ""

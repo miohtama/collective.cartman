@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0'
+version = '0.1'
 
 setup(name='collective.cartman',
       version=version,
-      description="Eric Cartman Javascript Shopping Cart Integration For Plone",
+      description="Eric Cartman shopping cart integration For Plone",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from
@@ -17,7 +17,7 @@ setup(name='collective.cartman',
       keywords='',
       author='',
       author_email='',
-      url='http://svn.plone.org/svn/collective/',
+      url='https://github.com/miohtama/collective.cartman',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['collective'],

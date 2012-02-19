@@ -1,4 +1,4 @@
-<div id="checkout-popup" style="display: none">
+<div id="checkout-popup" class="simple-overlay">
    <!-- Filled in by JS -->
 </div>
 
