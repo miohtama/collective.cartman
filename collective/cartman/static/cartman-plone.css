@@ -36,6 +36,10 @@ input[type=number] {
         width: 50px;
 }
 
+#checkout-popup {
+        position: fixed;
+}
+
 #checkout-popup .pb-ajax {
         padding: 15px;
 }
