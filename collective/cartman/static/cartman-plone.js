@@ -14,7 +14,7 @@
         var ui = new CartmanUI({
             cartman : cartman,
             selectors : {
-                addToCartAnimator : "button"
+                addToCartAnimator : "input[type=number]"
             }
         });
 

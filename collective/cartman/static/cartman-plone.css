@@ -1,5 +1,6 @@
 input[type=number] {
-        height: 26px;
+    /* XXX: Remove? */
+        height: auto;
 }
 
 #mini-cart .btn {
@@ -38,10 +39,11 @@ input[type=number] {
 
 #checkout-popup {
         position: fixed;
+        width: 700px;
 }
 
 #checkout-popup .pb-ajax {
-        padding: 15px;
+        padding: 30px;
 }
 
 #checkout-popup .pb-ajax > div {
@@ -84,7 +86,6 @@ table.checkout-list thead th {
 }
 .checkout-list .column-count input {
         width: 70px;
-        margin-top: 10px;
         text-align: center;
 }
 .checkout-list .column-remove {
@@ -111,6 +112,11 @@ table.checkout-list thead th {
 .checkout-footer .right {
         float: right;
 }
+
+.checkout-buttons {
+    margin-top: 10px;
+}
+
 .empty-checkout {
         text-align: center;
         margin-top: 40px;
