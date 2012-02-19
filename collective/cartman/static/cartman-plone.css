@@ -8,30 +8,6 @@ input[type=number] {
         margin-bottom: 5px;
 }
 
-.product-listing {
-        margin: 5px;
-        padding: 5px;
-}
-.product {
-        padding-right: 10px;
-}
-.product:last-child {
-        padding-right: 0;
-}
-.product form {
-}
-
-.product-image-wrapper {
-    display: table-cell;
-    vertical-align: middle;
-    height: 210px;
-}
-
-.product-image {
-        max-width: 150px;
-        margin: 10px auto;
-        display: block;
-}
 .add-count {
         text-align: right;
         width: 50px;
