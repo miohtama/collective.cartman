@@ -1,0 +1,56 @@
+<div id="form-templates" style="display: none">
+
+    <div id="checkout-form-template">
+
+        <dl class="portalMessage error" data-bind="empty">
+            <dt>Error</dt>
+            <dd>Your shopping cart is empty. Cannot checkout.</dd>
+        </dl>
+
+        <div data-bind="filled">
+            <table class="checkout-list table table-condensed">
+                <thead>
+                    <tr>
+                        <th><!-- image --></th>
+                        <th> Id </th>
+                        <th> Name </th>
+                        <th  class="column-price">
+                        <div>
+                            Price
+                        </div>
+                        <div class=discreet>
+                            (EUR, VAT 23%)
+                        </div></th>
+                        <th class="column-count"> Count </th>
+                        <th class="column-total">
+                        <div>
+                            Total
+                        </div>
+                        <div class=discreet>
+                            (EUR, VAT 23%)
+                        </div></th>
+                    </tr>
+                </thead>
+                <tbody data-bind="products">
+                    <tr class="checkout-line">
+                        <td>
+                            <img data-bind="img" />
+                        </td>
+                        <td data-bind="id"></td>
+                        <td data-bind="name"></td>
+                        <td data-bind="price" class="column-price"></td>
+                        <td data-bind="count" class="column-count"></td>
+                        <td data-bind="total" class="column-total"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="checkout-footer">
+                <div class="checkout-total">
+                    Total <b data-bind="total"></b> EUR
+                </div>
+            </div>
+        </div> <!-- filled -->
+    </div>
+
+</div>
