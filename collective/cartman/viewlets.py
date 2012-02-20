@@ -16,7 +16,7 @@ from plone.app.layout.viewlets.interfaces import IBelowContentTitle
 from plone.app.layout.viewlets.interfaces import IPortalFooter
 from plone.app.layout.viewlets.interfaces import IPortalTop
 
-from utils import has_mini_cart
+from utilities import has_mini_cart
 
 grok.templatedir("templates")
 

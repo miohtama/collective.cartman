@@ -9,7 +9,7 @@ from zope.interface import Interface
 from zope.component import getMultiAdapter, queryMultiAdapter
 from five import grok
 
-from utils import has_mini_cart
+from utilities import has_mini_cart
 
 grok.templatedir("templates")
 
@@ -80,3 +80,4 @@ class AddToCartHelper(grok.View):
             self.json = extractor.getJSON()
         else:
             self.data = self.json = None
+
