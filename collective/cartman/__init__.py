@@ -1,7 +1,7 @@
 from Products.CMFCore.DirectoryView import registerDirectory
 from Products.CMFCore import utils
 from Products.Archetypes.public import process_types, listTypes
-from Products.PloneFormGen.config import ADD_CONTENT_PERMISSION
+from config import ADD_CONTENT_PERMISSION
 from config import PROJECTNAME
 
 
@@ -18,7 +18,7 @@ def initialize(context):
     allTypes = zip(content_types, constructors)
     for atype, constructor in allTypes:
         kind = "%s: %s" % (PROJECTNAME, atype.archetype_name)
-        permission = ADD_CONTENT_PERMISSION
+        permission = ADD_CONTENT_PERMISSION[atype.portal_type]
         utils.ContentInit(
             kind,
             content_types      = (atype,),
