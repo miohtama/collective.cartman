@@ -30,4 +30,11 @@
             cacheable="True" compression="safe" cookable="True"
             enabled="1" expression="" insert-after="ploneKss.css"/>
 
+         <stylesheet
+            id="++resource++collective.cartman/bootstrap-icons.css"
+            media="" rel="stylesheet" rendering="import"
+            cacheable="True" compression="safe" cookable="True"
+            enabled="1" expression="" insert-after="ploneKss.css" />
+
+
 </object>

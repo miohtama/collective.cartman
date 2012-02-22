@@ -23,4 +23,7 @@ How to add your payment provider support to PloneFormGen.
 * Add in onSuccess() method which de-serializes form submission,
   validates and calculates final totals
 
+Misc
+=====
 
+Contains Twitter Bootstrap 2.0 icon kit adaption for Plone.
