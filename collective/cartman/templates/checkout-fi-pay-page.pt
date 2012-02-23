@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="example.dexterityforms"
+      metal:use-macro="context/main_template/macros/master">
+
+    <metal:block fill-slot="main">
+
+        <h1 class="documentFirstHeading" tal:content="context/Title" />
+
+        <p class="documentDescription" tal:content="context/Description" />
+
+        <form tal:condition="view/data|nothing" action="https://payment.checkout.fi/" method="POST">
+                <input type="hidden" tal:repeat="entry python:view.paymentData.items()" tal:attributes="name python:entry[0]; value python:entry[1]" />
+                <input type="submit" value="Siirry maksamaan checkout.fi palvelussa" />
+        </form>
+
+        <p tal:condition="not:view/data|nothing">
+                Payment info not available. Please go to form.
+        </p>
+
+    </metal:block>
+
+</html>

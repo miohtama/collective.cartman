@@ -1,0 +1,9 @@
+<object name="portal_properties">
+ <object name="navtree_properties" >
+  <property name="metaTypesNotToList" purge="False">
+   <element value="CheckoutFiPaymentAdapter"/>
+   <element value="CheckoutFiPaymentComplete"/>
+   <element value="CheckoutFiPayPage"/>
+  </property>
+ </object>
+</object>

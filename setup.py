@@ -25,6 +25,7 @@ setup(name='collective.cartman',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          "odict"
           # -*- Extra requirements: -*-
       ],
       entry_points="""

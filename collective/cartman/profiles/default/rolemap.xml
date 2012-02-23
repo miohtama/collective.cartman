@@ -2,6 +2,14 @@
 <rolemap>
   <permissions>
     <!-- -*- extra stuff goes here -*- -->
+    <permission name="collective.cartman: Add CheckoutFiPaymentComplete" acquire="False">
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
+    <permission name="collective.cartman: Add CheckoutFiPayPage" acquire="False">
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
     <permission name="collective.cartman: Add CheckoutFiPaymentAdapter" acquire="False">
       <role name="Manager" />
       <role name="Contributor" />

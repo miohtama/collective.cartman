@@ -4,6 +4,9 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="allowed_content_types" purge="False">
   <element value="CheckoutFiPaymentAdapter"/>
+  <element value="CheckoutFiPayPage"/>
+  <element value="CheckoutFiPaymentComplete"/>
+
  </property>
 </object>
 

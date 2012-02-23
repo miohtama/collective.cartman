@@ -10,4 +10,10 @@
   <object name="CheckoutFiPaymentAdapter"
     meta_type="Factory-based Type Information with dynamic views" />
 
+  <object name="CheckoutFiPaymentComplete"
+    meta_type="Factory-based Type Information with dynamic views" />
+
+  <object name="CheckoutFiPayPage"
+    meta_type="Factory-based Type Information with dynamic views" />
+
 </object>

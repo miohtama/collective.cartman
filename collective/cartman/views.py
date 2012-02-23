@@ -10,6 +10,7 @@ from zope.component import getMultiAdapter, queryMultiAdapter
 from five import grok
 
 from utilities import has_mini_cart
+from plone.uuid.interfaces import IUUID
 
 grok.templatedir("templates")
 
@@ -36,19 +37,45 @@ class ProductDataExtractor(grok.CodeView):
         """
         data = {}
 
-        if hasattr(self.context, "UID"):
-            data["id"] = self.context.UID() # Stock keeping id
-        else:
-            # Not avail in portal root, Dexterity 1.0
+        # Make sure we don't get UID from parent folder accidentally
+        context = self.context.aq_base
+
+        uid = sef.getUID()
+        if not uid:
             return None
+
+        # Stock keeping id
+        # Visible to user
+        data["id"] = uid
+
+        # Product checkout list data management
+        # points to Plone content
+        data["uid"] = uid
 
         data["name"] = self.context.Title()
         data["url"] = self.context.absolute_url()
         data["description"] = self.context.Description()
-        data["price"] = 5.0 # XXX: Use dummy price
+        data["price"] = self.getPrice()
         data["img"] = None # URL for the image to be used in checkout list
 
         return data
+
+    def getUID(self):
+        """ AT and Dexterity compatible way to extract UID from a content item """
+        # Make sure we don't get UID from parent folder accidentally
+        context = self.context.aq_base
+        # Returns UID of the context or None if not available
+        uuid = IUUID(context, None)
+        return uuid
+
+    def getPrice(self):
+        """
+        This function is also used by the checkout processor.
+
+        Override this to return real values for your shop.
+        """
+
+        return 5.0
 
     def getJSON(self):
         data = self.getData()

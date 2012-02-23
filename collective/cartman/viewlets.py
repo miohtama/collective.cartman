@@ -62,7 +62,7 @@ class JavascriptSettingsSnippet(grok.Viewlet):
             "checkoutURL" : portal_state.portal_url() + "/checkout",
 
             # jQuery selector to retrofit PFG with product data
-            "productFieldSelector" : "input[name=productdata]",
+            "productFieldSelector" : "input[name=product-data]",
 
             # jQuery selector for the template which renders
             # PFG checkout form product <table>
