@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="example.dexterityforms"
+      metal:use-macro="context/main_template/macros/master">
+
+    <metal:block fill-slot="main">
+
+        <div tal:condition="python:view.state == 'OK'">
+                <div tal:replace="structure context/getSuccessText" />
+        </div>
+
+        <div tal:condition="python:view.state == 'INVALID'">
+                <p>
+                        Form submission failed
+                </p>
+        </div>
+
+
+    </metal:block>
+
+</html>

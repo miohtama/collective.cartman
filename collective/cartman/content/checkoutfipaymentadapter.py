@@ -58,8 +58,6 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
     - Constructs a signed <form> submission to the payment provider
       using keys configured in the adapter settings
 
-    T
-
     """
 
     meta_type = "CheckoutFiPaymentAdapter"
@@ -138,6 +136,21 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
 
         return data
 
+    def dictify(self, row):
+        names = self.getColumnNames()
+        data = odict()
+        i = 0
+        for name in names:
+
+            if i==len(row):
+                raise RuntimeError("Overflow for reading order row field", name)
+
+            data[name] = row[i]
+            i += 1
+
+
+        return data
+
     def getOrderBySecret(self, orderSecret):
         """
         @return (id, order data) or (None, None)
@@ -151,20 +164,34 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
         if not order_secret_index:
             raise RuntimeError("Badly configured PFG payment form, lacks order-secret field")
 
-        def dictify(row):
-            data = odict()
-            i = 0
-            for name in names:
-                data[name] = row[i]
-                i += 1
-            return data
 
         for order_row_id, row in self._inputStorage.items():
             if row[order_secret_index] == orderSecret:
-                return order_row_id, dictify(row)
+                return order_row_id, self.dictify(row)
 
         return None, None
 
+    def getOrderByReferenceNumber(self, referenceNumber):
+        """
+        @return (id, order data) or (None, None)
+        """
+        names = self.getColumnNames()
+        try:
+            index = names.index("order-reference-number")
+        except:
+            raise RuntimeError("You must have a StringField order-reference-number on your form")
+
+        if referenceNumber in ["", None]:
+            raise RuntimeError("Missing reference number value")
+
+        if not index:
+            raise RuntimeError("Badly configured PFG payment form, lacks order-secret field")
+
+        for order_row_id, row in self._inputStorage.items():
+            if row[index] == referenceNumber:
+                return order_row_id, self.dictify(row)
+
+        return None, None
 
     def getReturnURL(self):
         """
@@ -187,7 +214,8 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
         Update row contents.
         """
 
-        assert isintance(value, odict)
+        #assert isinstance(value, odict)
+
         seq = [ val for val in value.values() ]
         self._inputStorage[id] = seq
 
@@ -249,14 +277,22 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
 
         # Fill in these so that
         orderSecret = str(random.randint(0, 999999999))
-        REQUEST.form["order-id"] = self.nextOrderId()
+        orderId = self.nextOrderId()
+        REQUEST.form["order-id"] = orderId
         REQUEST.form["order-secret"] = orderSecret
         REQUEST.form["order-status"] = "waiting-payment"
+        REQUEST.form["order-reference-number"] = checkoutfi.create_reference_number(orderId)
 
         # Validated product data
         REQUEST.form[PRODUCT_DATA_FIELD] = json.dumps(productData)
 
         self.saveRow(fields, REQUEST)
 
+    security.declarePublic('foobar')
+    def foobar(self, *args, **kwargs):
+        return self.download(*args, **kwargs)
+
+
+    security.declareProtected(permissions.View, 'download_csv')
 
 atapi.registerType(CheckoutFiPaymentAdapter, PROJECTNAME)

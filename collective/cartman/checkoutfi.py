@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 """
 
     Checkout.fi payment service implementation in Python
 
     http://checkout.fi/ohjelmistopaketit.html
+
+    Use Nordea bank in the need of test bank.
 
 """
 
@@ -33,8 +36,43 @@ def create_reference_number(orderId):
 
     return digits + str(check_digit)
 
+def calculate_mac(secret, data, separator="+", secret_at_end=True):
+    """
+    @param data: odict
+    """
+    # calculate MAC
+    concat = separator.join(data.values())
+
+    #logger.warn(o)
+
+    # Hashed string should look like
+    # 0001+1329982892+1000+12344+Huonekalutilaus Paljon puita, lehtiÃ¤ ja muttereita+FI+375917+http://demo1.checkout.fi/xml2.php?test=1++++FIN+EUR+1+1+0+2+20120223+Tero+Testaaja+Ã„Ã¤kkÃ¶stie 5b3 Kulmaravintolan ylÃ¤kerta+33100+Tampere+SAIPPUAKAUPPIAS0001+1329982893+1000+12344+Huonekalutilaus Paljon puita, lehtiÃ¤ ja muttereita+FI+375917+http://demo1.checkout.fi/xml2.php?test=1
+    # ++++FIN+EUR+10+1+0+2+20120223+Tero+Testaaja+Ã„Ã¤kkÃ¶stie 5b3 Kulmaravintolan ylÃ¤kerta+33100+Tampere+SAIPPUAKAUPPIAS
+
+    # 0001+3+1500+39+verkkokauppa+FI+375917+http://localhost:9001/Plone/tietoja/tilaaminen/pay/thank-you-for-order?order-secret=944379638+http://localhost:9001/Plone/tietoja/tilaaminen/pay/payment-cancelled
+    # +++FIN+EUR+1+1+0+1+20120223+++++
+    #logger.warn(concat)
+
+    if not secret:
+        raise RuntimeError("Missing shared secret")
+
+    # WHYYY they can't do things in one way?
+    if secret_at_end:
+        concat += separator + secret
+    else:
+        concat = secret + separator + concat
+
+    logger.warn("Mac data:" + concat)
+
+    m = hashlib.md5()
+    m.update(concat)
+
+    return m.hexdigest().upper()
+
+
 def construct_checkout(orderId, secret, data):
     """
+    Create checkout.fi FORM PORT parameters.
 
     @param data: Dictionary of to be filled in fields as in API document
     """
@@ -103,7 +141,7 @@ def construct_checkout(orderId, secret, data):
     o["AMOUNT"] = str(int(get_required("AMOUNT")))
 
     # Bank accounting reference number
-    o["REFERENCE"] = create_reference_number(orderId)
+    o["REFERENCE"] = get_required("REFERENCE")
 
     # Bank accounting reference message
     o["MESSAGE"] = get_required("MESSAGE")
@@ -130,7 +168,7 @@ def construct_checkout(orderId, secret, data):
     o["TYPE"] = "0"
 
     # No idea
-    o['ALGORITHM']="1"
+    o['ALGORITHM']="2"
 
     o['DELIVERY_DATE']=get_required("DELIVERY_DATE")
 
@@ -141,22 +179,50 @@ def construct_checkout(orderId, secret, data):
     o['POSTCODE'] = ""
     o['POSTOFFICE'] = ""
 
-    # calculate MAC
-    concat = "".join(o.values())
 
-    logger.warn(o)
-    logger.warn(concat)
+    o["MAC"] = calculate_mac(secret, o)
 
-    if not secret:
-        raise RuntimeError("Missing shared secret")
-
-    concat += secret
-
-    m = hashlib.md5()
-    m.update(concat)
-
-    o["MAC"] = m.hexdigest().upper()
+    logger.warn("Mac:" + o["MAC"])
 
     return o
 
+def confirm_payment_signature(secret, data):
+    """
+    Check that payment signature is right in
+    HTTP POST coming from checkout.fi.
 
+    @return True if signature matches
+
+    ('STATUS', '2')
+    ('ALGORITHM', '2')
+    ('REFERENCE', '84')
+    ('STAMP', '8')
+    ('order-secret', '813279119')
+    ('MAC', 'E8FB6D8243EE52FDFC65F134FF495792')
+    ('VERSION', '0001')
+    ('PAYMENT', '2665410')
+    """
+
+    # $generatedMac=strtoupper(md5("{$this->password}&{$this->version}&{$this->stamp}&{$this->reference}&{$this->payment}&{$this->status}&{$this->algorithm}"));
+    o = odict()
+    o["VERSION"] = data["VERSION"]
+    o["STAMP"] = data["STAMP"]
+    o["REFERENCE"] = data["REFERENCE"]
+    o["PAYMENT"] = data["PAYMENT"]
+    o["STATUS"] = data["STATUS"]
+    o["ALGORITHM"] = data["ALGORITHM"]
+
+    # 0001&35&354&2665785&2&2&SAIPPUAKAUPPIAS
+    # 9D6C686F66D65E0956C8FB71E7A5FC93
+
+    # 2012-02-23 11:29:58 WARNING checkout.fi Mac data:0001&34&385&2665800&2&2&SAIPPUAKAUPPIAS
+    # 2012-02-23 11:29:58 WARNING checkout.fi Our mac:97B9AD07342948B1E89DE7D439565EC3
+    # 2012-02-23 11:29:58 WARNING checkout.fi Incoming mac:2E8BEC4424E5128057D9A42FE7228BE6
+
+    # Oh, why they need to use two different sepatators...?
+    mac = calculate_mac(secret, o, separator="&", secret_at_end=False)
+
+    logger.warn("Our mac:" + mac)
+    logger.warn("Incoming mac:" + data["MAC"])
+
+    return (mac == data["MAC"])

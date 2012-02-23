@@ -16,6 +16,9 @@
   <property name="default_view">base_view</property>
   <property name="view_methods">
     <element value="base_view" />
+    <element value="fg_savedata_tabview_p3"/>
+    <element value="fg_savedata_recview_p3"/>
+    <element value="fg_savedata_view_p3"/>
   </property>
   <alias from="(Default)" to="(dynamic view)" />
   <alias from="edit" to="atct_edit" />

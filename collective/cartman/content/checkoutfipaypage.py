@@ -46,10 +46,9 @@ CheckoutFiPayPageSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
 # Set storage on fields copied from ATContentTypeSchema, making sure
 # they work well with the python bridge properties.
 
-CheckoutFiPayPageSchema['title'].storage = atapi.AnnotationStorage()
-CheckoutFiPayPageSchema['description'].storage = atapi.AnnotationStorage()
-
 schemata.finalizeATCTSchema(CheckoutFiPayPageSchema, moveDiscussion=False)
+
+CheckoutFiPayPageSchema["title"].default = "Proceed to payment"
 
 class ICheckoutFiPayPage(Interface):
     """ """

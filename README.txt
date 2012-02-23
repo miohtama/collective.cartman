@@ -39,6 +39,16 @@ Add a new string field to PloneFormGen form with id ``order-id``
 
 * Field is not requird
 
+Order reference number field on checkout form
+-------------------------------------------------
+
+Add a new string field to PloneFormGen form with id ``order-reference-number``
+Field is used for bank payments tracking.
+
+* Field is hidden
+
+* Field is not required
+
 Order secret field on checkout form
 ------------------------------------
 

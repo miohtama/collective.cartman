@@ -1,11 +1,13 @@
 """Definition of the CheckoutFiPaymentComplete content type
 """
 
-from zope.interface import implements
+from zope.interface import implements, Interface
 
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import base
 from Products.ATContentTypes.content import schemata
+
+from Products.ATContentTypes.configuration import zconf
 
 # -*- Message Factory Imported Here -*-
 
@@ -15,21 +17,37 @@ CheckoutFiPaymentCompleteSchema = schemata.ATContentTypeSchema.copy() + atapi.Sc
 
     # -*- Your Archetypes field definitions here ... -*-
 
+   atapi.TextField('successText',
+        required=False,
+        searchable=False,
+        primary=False,
+        validators = ('isTidyHtmlWithCleanup',),
+        default_content_type = zconf.ATDocument.default_content_type,
+        default_output_type = 'text/x-html-safe',
+        allowable_content_types = zconf.ATDocument.allowed_content_types,
+        widget = atapi.RichWidget(
+            label = "Success Message",
+            description = "Shown when payment success",
+            rows = 8,
+            allow_file_upload = zconf.ATDocument.allow_document_upload,
+            ),
+        ),
+
 ))
-
-# Set storage on fields copied from ATContentTypeSchema, making sure
-# they work well with the python bridge properties.
-
-CheckoutFiPaymentCompleteSchema['title'].storage = atapi.AnnotationStorage()
-CheckoutFiPaymentCompleteSchema['description'].storage = atapi.AnnotationStorage()
 
 schemata.finalizeATCTSchema(CheckoutFiPaymentCompleteSchema, moveDiscussion=False)
 
+CheckoutFiPaymentCompleteSchema["title"].default = "order-received"
+
+class ICheckoutFiPaymentComplete(Interface):
+    """ """
 
 class CheckoutFiPaymentComplete(base.ATCTContent):
     """Checkout.fi page returned from the payment processor"""
     meta_type = "CheckoutFiPaymentComplete"
     schema = CheckoutFiPaymentCompleteSchema
+
+    implements(ICheckoutFiPaymentComplete)
 
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
 

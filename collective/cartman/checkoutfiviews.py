@@ -16,7 +16,8 @@ from five import grok
 from collective.cartman.interfaces import IHideMiniCart
 from collective.cartman import checkoutfi
 
-from collective.cartman.content.checkoutfipaypage import CheckoutFiPayPage, ICheckoutFiPayPage
+from collective.cartman.content.checkoutfipaypage import CheckoutFiPayPage
+from collective.cartman.content.checkoutfipaymentcomplete import CheckoutFiPaymentComplete
 
 grok.templatedir("templates")
 
@@ -34,29 +35,28 @@ class CheckoutFiFormGenView(object):
     def getForm(self):
         return self.context.aq_parent
 
-    def getPaymentAdapter(self):
+    def getOrderAdapter(self):
 
-        form = self.getForm()
+        form = self.form = self.getForm()
 
         if not ORDER_ADAPTER_ID in form.objectIds():
             return None
 
         return form[ORDER_ADAPTER_ID]
 
-class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
+    def getPaymentAdapter(self):
 
-    # Don't show shopping cart on this view
-    implements(IHideMiniCart)
+        form = self.form = self.getForm()
 
-    grok.context(ICheckoutFiPayPage)
-    grok.name("checkout-fi-pay")
-    grok.template("checkout-fi-pay-page")
+        if not "pay" in form.objectIds():
+            return None
 
-    def update(self):
-        """
-        """
+        return form["pay"]
 
-        order_adapter = self.getPaymentAdapter()
+    def updateOrderDataBySecret(self):
+        """ Read order from the form storage, etc. """
+
+        order_adapter = self.orderAdapter = self.getOrderAdapter()
         if not order_adapter:
             logger.warn("Could not find order adapter")
             return None
@@ -64,12 +64,46 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
         self.order_secret = self.request.form.get("order-secret")
         if not self.order_secret:
             logger.warn("Order secret missing")
-            return
+            return None
 
         self.orderRowId, self.data = order_adapter.getOrderBySecret(self.order_secret)
         if not self.data:
             logger.warn("Could not access order data")
-            return
+            return None
+
+        return True
+
+    def updateOrderDataByReferenceNumber(self, referenceNumber):
+        """ Read order from the form storage, etc. """
+
+        order_adapter = self.orderAdapter = self.getOrderAdapter()
+        if not order_adapter:
+            logger.warn("Could not find order adapter")
+            return None
+
+        self.orderRowId, self.data = order_adapter.getOrderByReferenceNumber(referenceNumber)
+        if not self.data:
+            logger.warn("Could not access order data w/ reference number:", referenceNumber)
+            return None
+
+        return True
+
+
+class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
+
+    # Don't show shopping cart on this view
+    implements(IHideMiniCart)
+
+    grok.context(CheckoutFiPayPage)
+    grok.name("checkout-fi-pay")
+    grok.template("checkout-fi-pay-page")
+
+    def update(self):
+        """
+        """
+
+        if not self.updateOrderDataBySecret():
+            return None
 
         self.products = json.loads(self.data["product-data"])
 
@@ -101,9 +135,74 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
         d["AMOUNT"] = total
         d["MESSAGE"] = self.context.getMessage()
         d["MERCHANT"] = self.context.getSellerId()
-        d["RETURN"] = self.context.absolute_url() + "/thank-you-for-order?order-secret=" + self.order_secret
-        d["CANCEL"] = self.context.absolute_url() + "/payment-cancelled"
+        d["RETURN"] = self.form.absolute_url() + "/order-received"
+        d["CANCEL"] = self.form.absolute_url()
         d["DELIVERY_DATE"] = datetime.date.today().strftime("%Y%m%d")
+        d["REFERENCE"] = self.request.form["order-reference-number"]
 
         return checkoutfi.construct_checkout(orderId, self.context.getSecret(), d)
+
+
+class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
+    """
+    When returning from the payment processor.
+
+    Handles all cases: OK, CANCEL, DELIVERED,DELAYED, etc.
+    """
+    # Don't show shopping cart on this view
+    implements(IHideMiniCart)
+
+    grok.context(CheckoutFiPaymentComplete)
+    grok.name("checkout-fi-complete")
+    grok.template("checkout-fi-complete-page")
+
+    def getState(self):
+        return self.state
+
+    def updateOrderState(self):
+        """
+        Update the order record in Plone database with new status field.
+        """
+
+        # Update the order record to be completed
+        if self.state == "OK":
+            self.data["order-status"] = "payment-complete"
+            self.orderAdapter.setRow(self.orderRowId, self.data)
+
+    def update(self):
+
+        # State is INVALID until further cleared
+        self.state = "INVALID"
+
+        request = self.request
+
+        payment_adapter = self.getPaymentAdapter()
+        if not payment_adapter:
+            raise RuntimeError("Payment adapter missing")
+
+        # Post request coming from PP
+        if request.form.get("STATUS", None) is not None:
+
+            if not checkoutfi.confirm_payment_signature(payment_adapter.getSecret(), request.form):
+                logger.error("Bad MAC signature")
+            else:
+                status = request.form.get("STATUS", None)
+
+                logger.warn("Form:", request.form)
+
+                # Map to checkout.fi to our view internal state
+                if status == "2":
+                    self.state = "OK"
+
+        else:
+            logger.warn("Payment complete page did not get proper checkout.fi callback")
+
+        if self.state != "INVALID":
+            ref = request.form.get("REFERENCE")
+            self.updateOrderDataByReferenceNumber(ref)
+            self.updateOrderState()
+
+        logger.warn("Payment complete, final state:" + self.state)
+
+
 
