@@ -12,9 +12,9 @@ from five import grok
 from utilities import has_mini_cart
 from plone.uuid.interfaces import IUUID
 
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
-TWOPLACES = Decimal(10) ** -2
+TWOPLACES = Decimal("0.01")
 
 grok.templatedir("templates")
 
@@ -71,7 +71,7 @@ class ProductDataExtractor(grok.CodeView):
         price = self.getPrice()
         if price is None:
             return None
-        return Decimal(price).quantize(TWOPLACES)
+        return Decimal(price).quantize(TWOPLACES, ROUND_HALF_UP)
 
     def getUID(self):
         """ AT and Dexterity compatible way to extract UID from a content item """

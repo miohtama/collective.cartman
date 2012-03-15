@@ -12,9 +12,7 @@
         </div>
 
         <div tal:condition="python:view.state == 'INVALID'">
-                <p>
-                        Form submission failed
-                </p>
+                <div tal:replace="structure context/getFailText" />
         </div>
 
 

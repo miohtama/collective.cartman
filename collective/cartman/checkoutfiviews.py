@@ -198,11 +198,22 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
             logger.warn("Payment complete page did not get proper checkout.fi callback")
 
         if self.state != "INVALID":
+            # Save paymet payment processor refernce
             ref = request.form.get("REFERENCE")
             self.updateOrderDataByReferenceNumber(ref)
             self.updateOrderState()
 
         logger.warn("Payment complete, final state:" + self.state)
+
+
+    def sendEmail(self, received, template):
+        """
+        Send out an email notification.
+        """
+
+        if template in ["", None]:
+            return
+
 
 
 
