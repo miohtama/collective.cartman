@@ -8,7 +8,7 @@
     <metal:block fill-slot="main">
 
         <div tal:condition="python:view.state == 'OK'">
-                <div tal:replace="structure context/getSuccessText" />
+                <div tal:replace="structure view/getSuccessText" />
         </div>
 
         <div tal:condition="python:view.state == 'INVALID'">

@@ -110,7 +110,7 @@ Payment processor will submit HTTT POST to this page
 when the payment is completed. The page logic will extract
 variables from POST and update the order status in the save adapter.
 
-The id of this page must be ``thank-you-for-order``.
+The id of this page must be ``order-processed``.
 
 Payment cancelled
 --------------------------

@@ -46,9 +46,27 @@ CheckoutFiPaymentCompleteSchema = schemata.ATContentTypeSchema.copy() + atapi.Sc
             description = "Shown when payment cancelled / did not success",
             rows = 8,
             allow_file_upload = zconf.ATDocument.allow_document_upload,
-            ),
         ),
+    ),
 
+    atapi.StringField('shopOwnerAddress',
+        widget = atapi.StringWidget(
+            label = "Shopw owner email",
+            description = "Send notification from new orders to this email",
+            rows = 8,
+        ),
+    ),
+
+
+    atapi.StringField('customerEmailSubject',
+        required=False,
+        searchable=False,
+        widget = atapi.StringWidget(
+            label = "Customer email notification subject",
+            description = "Send to the buyer.",
+            rows = 8,
+            ),
+    ),
 
     atapi.TextField('customerEmail',
         required=False,

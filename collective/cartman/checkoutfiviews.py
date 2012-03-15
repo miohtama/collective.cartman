@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
     Checkout.fi payment processor views
@@ -12,6 +13,7 @@ import logging
 from zope.interface import Interface, implements
 from zope.component import getMultiAdapter, queryMultiAdapter
 from five import grok
+from Products.CMFCore.utils import getToolByName
 
 from collective.cartman.interfaces import IHideMiniCart
 from collective.cartman import checkoutfi
@@ -22,6 +24,8 @@ from collective.cartman.content.checkoutfipaymentcomplete import CheckoutFiPayme
 grok.templatedir("templates")
 
 ORDER_ADAPTER_ID="order"
+
+PROCESSED_ITEM_ID="order-processed"
 
 logger = logging.getLogger("checkout.fi")
 
@@ -35,8 +39,8 @@ class CheckoutFiFormGenView(object):
     def getForm(self):
         return self.context.aq_parent
 
-    def getOrderAdapter(self):
-
+    def getOrderItem(self):
+        """ Content item storing the orders """
         form = self.form = self.getForm()
 
         if not ORDER_ADAPTER_ID in form.objectIds():
@@ -44,8 +48,8 @@ class CheckoutFiFormGenView(object):
 
         return form[ORDER_ADAPTER_ID]
 
-    def getPaymentAdapter(self):
-
+    def getPaymentItem(self):
+        """ Content item having merchandise id """
         form = self.form = self.getForm()
 
         if not "pay" in form.objectIds():
@@ -53,10 +57,21 @@ class CheckoutFiFormGenView(object):
 
         return form["pay"]
 
+    def getCompleteItem(self):
+        """ Content item for thanks page """
+
+        form = self.form = self.getForm()
+
+        if not PROCESSED_ITEM_ID in form.objectIds():
+            return None
+
+        return form[PROCESSED_ITEM_ID]
+
+
     def updateOrderDataBySecret(self):
         """ Read order from the form storage, etc. """
 
-        order_adapter = self.orderAdapter = self.getOrderAdapter()
+        order_adapter = self.orderAdapter = self.getOrderItem()
         if not order_adapter:
             logger.warn("Could not find order adapter")
             return None
@@ -76,7 +91,7 @@ class CheckoutFiFormGenView(object):
     def updateOrderDataByReferenceNumber(self, referenceNumber):
         """ Read order from the form storage, etc. """
 
-        order_adapter = self.orderAdapter = self.getOrderAdapter()
+        order_adapter = self.orderAdapter = self.getOrderItem()
         if not order_adapter:
             logger.warn("Could not find order adapter")
             return None
@@ -135,8 +150,8 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
         d["AMOUNT"] = total
         d["MESSAGE"] = self.context.getMessage()
         d["MERCHANT"] = self.context.getSellerId()
-        d["RETURN"] = self.form.absolute_url() + "/order-received"
-        d["CANCEL"] = self.form.absolute_url()
+        d["RETURN"] = self.form.absolute_url() + "/" + PROCESSED_ITEM_ID
+        d["CANCEL"] = self.form.absolute_url() + "/" + PROCESSED_ITEM_ID
         d["DELIVERY_DATE"] = datetime.date.today().strftime("%Y%m%d")
         d["REFERENCE"] = self.request.form["order-reference-number"]
 
@@ -148,6 +163,8 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
     When returning from the payment processor.
 
     Handles all cases: OK, CANCEL, DELIVERED,DELAYED, etc.
+
+    Sample URL: http://localhost:9001/Plone/tietoja/tilaaminen/order-processed?VERSION=0001&STAMP=9&REFERENCE=97&PAYMENT=2834271&STATUS=2&ALGORITHM=2&MAC=874DB1883C5B3288AE25E0E287ED0282
     """
     # Don't show shopping cart on this view
     implements(IHideMiniCart)
@@ -176,9 +193,11 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
 
         request = self.request
 
-        payment_adapter = self.getPaymentAdapter()
+        payment_adapter = self.getPaymentItem()
         if not payment_adapter:
             raise RuntimeError("Payment adapter missing")
+
+        self.payment_adapter = payment_adapter
 
         # Post request coming from PP
         if request.form.get("STATUS", None) is not None:
@@ -203,6 +222,9 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
             self.updateOrderDataByReferenceNumber(ref)
             self.updateOrderState()
 
+            self.sendCustomerEmail()
+            self.sendShopOwnerEmail()
+
         logger.warn("Payment complete, final state:" + self.state)
 
     def templatize(self, template):
@@ -212,13 +234,13 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         Use order data keys as template variables.
         """
         output = template
-        for key, value in self.data:
+        for key, value in self.data.items():
             var = "$" + key
             output = output.replace(var, value)
 
         return output
 
-    def sendEmail(self, receiver, template):
+    def sendEmail(self, subject, receiver, template):
         """
         Send out an email notification.
         """
@@ -229,16 +251,62 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         if template.strip() == "":
             return
 
-        email = receiver
+        # String replacement for template variables
+        message = self.templatize(template)
 
-        host = getToolByName(self, 'MailHost')
+        mailhost = getToolByName(self.context, 'MailHost')
         # The `immediate` parameter causes an email to be sent immediately
         # (if any error is raised) rather than sent at the transaction
         # boundary or queued for later delivery.
-        return host.send(mail_text, immediate=True)
+
+        # Site from address
+        portal = self.context.portal_url.getPortalObject()
+        source = portal.email_from_address
+        # fromname = porta.xxx?
+
+        try:
+            mailhost.send(message,
+                        receiver,
+                        source,
+                        subject=subject,
+                        subtype='plain',
+                        charset="utf-8",
+                        debug=False,
+                        immediate = True,
+                        From=source)
+        except Exception, e:
+            # Gracefully handle SMTP errors
+            import logging
+            logger = logging.getLogger("ShopEmail")
+            logger.exception(e)
+            pass
 
 
+    def sendCustomerEmail(self):
+        """
+        """
+        data = self.data
+        receiver = data["email"]
+        complete = self.getCompleteItem()
+        subject = complete.getCustomerEmailSubject()
+        msg = complete.getCustomerEmail()
+        self.sendEmail(subject, receiver, msg)
 
+    def sendShopOwnerEmail(self):
+        """
+        """
+        data = self.data
+        complete = self.getCompleteItem()
+        receiver = complete.getShopOwnerAddress()
+        msg = complete.getShopOwnerEmail()
+        subject = "Order #" + str(self.orderRowId)
+        self.sendEmail("New order", receiver, msg)
 
+    def getSuccessText(self):
+        """
 
+        """
+        text = self.context.getSuccessText()
+        text = text.decode("utf-8")
+        return self.templatize(text)
 
