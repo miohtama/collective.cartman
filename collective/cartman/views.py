@@ -76,6 +76,7 @@ class ProductDataExtractor(grok.CodeView):
         price = price.replace(",", ".")
         return Decimal(price).quantize(TWOPLACES, ROUND_HALF_UP)
 
+
     def getUID(self):
         """ AT and Dexterity compatible way to extract UID from a content item """
         # Make sure we don't get UID from parent folder accidentally
@@ -119,8 +120,9 @@ class AddToCartHelper(grok.View):
         extractor = queryMultiAdapter((context, self.request), name="product-data-extractor")
 
         if extractor:
+            self.extractor = extractor
             self.data = extractor.getData()
             self.json = extractor.getJSON()
         else:
-            self.data = self.json = None
+            self.data = self.json = self.extractor = None
 

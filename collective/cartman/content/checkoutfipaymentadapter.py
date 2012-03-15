@@ -153,7 +153,7 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
 
     def getOrderBySecret(self, orderSecret):
         """
-        @return (id, order data) or (None, None)
+        @return (id, order data dict) or (None, None)
         """
         names = self.getColumnNames()
         order_secret_index = names.index("order-secret")
@@ -173,7 +173,7 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
 
     def getOrderByReferenceNumber(self, referenceNumber):
         """
-        @return (id, order data) or (None, None)
+        @return (id, order data dict) or (None, None)
         """
         names = self.getColumnNames()
         try:
@@ -212,6 +212,8 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
     def setRow(self, id, value):
         """
         Update row contents.
+
+        @param value: dict of data
         """
 
         #assert isinstance(value, odict)

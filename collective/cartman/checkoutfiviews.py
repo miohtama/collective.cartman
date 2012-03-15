@@ -205,8 +205,20 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
 
         logger.warn("Payment complete, final state:" + self.state)
 
+    def templatize(self, template):
+        """
+        Replace template variables in the string.
 
-    def sendEmail(self, received, template):
+        Use order data keys as template variables.
+        """
+        output = template
+        for key, value in self.data:
+            var = "$" + key
+            output = output.replace(var, value)
+
+        return output
+
+    def sendEmail(self, receiver, template):
         """
         Send out an email notification.
         """
