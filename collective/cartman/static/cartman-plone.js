@@ -67,9 +67,18 @@
         listing.insertAfter(field);
     }
 
-    $(document).ready(function() {
+    function initCartman() {
+
+        // No double init
+        if(cartman) {
+            return {
+                cartman : cartman,
+                ui : ui
+            };
+        }
 
         cartman = new Cartman();
+
         ui = new CartmanUI({
             cartman : cartman,
             selectors : {
@@ -89,10 +98,20 @@
             window.location = cartmanOptions.checkoutURL;
         };
 
+        if(window.setupCartman) {
+            window.setupCartman(cartman, ui);
+        }
+
         // Load cart from localStorage,
         cartman.refreshStore();
 
         retrofitPloneFormGen();
+
+    }
+
+
+    $(document).ready(function() {
+        initCartman();
     });
 
 })(jQuery);

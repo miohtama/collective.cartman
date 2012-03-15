@@ -223,8 +223,21 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         Send out an email notification.
         """
 
-        if template in ["", None]:
+        if template is None:
             return
+
+        if template.strip() == "":
+            return
+
+        email = receiver
+
+        host = getToolByName(self, 'MailHost')
+        # The `immediate` parameter causes an email to be sent immediately
+        # (if any error is raised) rather than sent at the transaction
+        # boundary or queued for later delivery.
+        return host.send(mail_text, immediate=True)
+
+
 
 
 
