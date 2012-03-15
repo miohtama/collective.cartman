@@ -71,6 +71,8 @@ class ProductDataExtractor(grok.CodeView):
         price = self.getPrice()
         if price is None:
             return None
+        price = str(price)
+        price = price.replace(",", ".")
         return Decimal(price).quantize(TWOPLACES)
 
     def getUID(self):
