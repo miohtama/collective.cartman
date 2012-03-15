@@ -269,11 +269,9 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
                         receiver,
                         source,
                         subject=subject,
-                        subtype='plain',
+                        #subtype='plain',
                         charset="utf-8",
-                        debug=False,
-                        immediate = True,
-                        From=source)
+                        immediate = True)
         except Exception, e:
             # Gracefully handle SMTP errors
             import logging
