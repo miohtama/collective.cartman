@@ -4,6 +4,8 @@
 
 /*global window,Cartman,CartmanUI,cartmanOptions*/
 
+window.getCart = null;
+
 (function($) {
 
     "use strict";
@@ -109,6 +111,18 @@
 
     }
 
+    // Explose as global
+    window.getCart = function() {
+
+        initCartman();
+
+        // No double init
+        return {
+            cartman : cartman,
+            ui : ui
+        };
+
+    };
 
     $(document).ready(function() {
         initCartman();

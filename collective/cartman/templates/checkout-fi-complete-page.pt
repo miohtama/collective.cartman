@@ -9,6 +9,17 @@
 
         <div tal:condition="python:view.state == 'OK'">
                 <div tal:replace="structure view/getSuccessText" />
+
+                <script type="text/javascript">
+                        // Clear shopping cart after
+                        // succesful buy in
+                        $(document).ready(function() {
+
+                            // Make sure cartman is initialized
+                            var cart = window.getCart();
+                            cart.cartman.clear();
+                        });
+                </script>
         </div>
 
         <div tal:condition="python:view.state == 'INVALID'">
