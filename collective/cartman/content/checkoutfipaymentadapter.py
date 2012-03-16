@@ -291,11 +291,6 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
 
         self.saveRow(fields, REQUEST)
 
-    security.declarePublic('foobar')
-    def foobar(self, *args, **kwargs):
-        return self.download(*args, **kwargs)
-
-
     security.declareProtected(permissions.View, 'download_csv')
 
 atapi.registerType(CheckoutFiPaymentAdapter, PROJECTNAME)

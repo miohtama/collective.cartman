@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <object name="portal_workflow" meta_type="Plone Workflow Tool">
+
  <bindings>
   <type type_id="CheckoutFiPaymentAdapter"/>
  </bindings>
@@ -10,7 +11,9 @@
  </bindings>
 
  <bindings>
-  <type type_id="CheckoutFiPayPage"/>
+  <type type_id="CheckoutFiPayPage">
+     <bound-workflow workflow_id="simple_publication_workflow" />
+  </type>
  </bindings>
 
 </object>
