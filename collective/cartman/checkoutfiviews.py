@@ -9,6 +9,7 @@ import datetime
 import json
 import math
 import logging
+from odict import odict
 
 from zope.interface import Interface, implements
 from zope.component import getMultiAdapter, queryMultiAdapter
@@ -113,6 +114,17 @@ class CheckoutFiFormGenView(object):
         else:
             return []
 
+    def calculateTotal(self, orderData):
+        """
+        All prices are tax included prices.
+
+        @return: Total sum in floating point
+        """
+        order_sum = 0
+        for product in orderData:
+            order_sum += self.orderHelper.getTotalPrice(product)
+        return order_sum
+
 
 class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
 
@@ -141,17 +153,6 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
             raise RuntimeError("Merchant secret is not set")
 
         self.paymentData = self.createPaymentData(self.data["order-id"], total)
-
-    def calculateTotal(self, orderData):
-        """
-        All prices are tax included prices.
-
-        @return: Total sum in floating point
-        """
-        order_sum = 0
-        for product in orderData:
-            order_sum += self.orderHelper.getTotalPrice(product)
-        return order_sum
 
     def createPaymentData(self, orderId, total):
         """
@@ -221,6 +222,8 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
 
         self.payment_adapter = payment_adapter
 
+        self.orderHelper = getMultiAdapter((self.context, self.request), name="order-helper")
+
         # Post request coming from PP
         if request.form.get("STATUS", None) is not None:
 
@@ -249,6 +252,12 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
 
         logger.warn(u"Payment complete, final state:" + self.state)
 
+    def getExtraTemplateVariables(self):
+        """
+        Get custom vars available in mini-templates.
+        """
+        return {}
+
     def templatize(self, template):
         """
         Replace template variables in the string.
@@ -259,13 +268,25 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         if type(template) != unicode:
             raise RuntimeError("Bad template:" + str(type(template)))
 
+
         output = template
-        for key, value in self.data.items():
+
+        vars = odict()
+        vars.update(self.data)
+        vars.update(self.getExtraTemplateVariables())
+
+        for key, value in vars.items():
 
             if type(value) == str:
                 value = value.decode("utf-8")
+            elif type(value) == unicode:
+                value = value
+            else:
+                raise RuntimeError("Bad template data in " + key + " " + unicode(type(value)))
 
             var = u"$" + unicode(key)
+
+
             output = output.replace(var, value)
 
         return output

@@ -28,14 +28,14 @@ class HelperBaseView(grok.CodeView):
         """
         price = str(price)
         price = price.replace(",", ".")
-        return Decimal(price).quantize(TWOPLACES, ROUND_HALF_UP)
+        return unicode(Decimal(price).quantize(TWOPLACES, ROUND_HALF_UP))
 
     def formatWeight(self, weight):
         """
         """
         weight = str(weight)
         weight = weight.replace(",", ".")
-        return Decimal(weight).quantize(TWOPLACES, ROUND_HALF_UP)
+        return unicode(Decimal(weight).quantize(TWOPLACES, ROUND_HALF_UP))
 
     def getTotalPrice(self, product):
         """
