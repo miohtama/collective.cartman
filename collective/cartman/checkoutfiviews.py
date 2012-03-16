@@ -107,8 +107,11 @@ class CheckoutFiFormGenView(object):
         """
         @return: Iterable of products
         """
-        s = self.data["product-data"]
-        return json.loads(s)
+        if hasattr(self, "data"):
+            s = self.data["product-data"]
+            return json.loads(s)
+        else:
+            return []
 
 
 class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
