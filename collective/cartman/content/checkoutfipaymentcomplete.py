@@ -33,7 +33,7 @@ CheckoutFiPaymentCompleteSchema = schemata.ATContentTypeSchema.copy() + atapi.Sc
             ),
         ),
 
-   atapi.TextField('failText',
+    atapi.TextField('failText',
         required=False,
         searchable=False,
         primary=False,
@@ -48,6 +48,22 @@ CheckoutFiPaymentCompleteSchema = schemata.ATContentTypeSchema.copy() + atapi.Sc
             allow_file_upload = zconf.ATDocument.allow_document_upload,
         ),
     ),
+
+   atapi.TextField('alreadyOrderedText',
+        required=False,
+        searchable=False,
+        primary=False,
+        validators = ('isTidyHtmlWithCleanup',),
+        default_content_type = zconf.ATDocument.default_content_type,
+        default_output_type = 'text/x-html-safe',
+        allowable_content_types = zconf.ATDocument.allowed_content_types,
+        widget = atapi.RichWidget(
+            label = "Already Ordered Message",
+            description = "Text shown if the user tries to re-entry the same order twice (e.g. by hitting submit button twice or using Back navigation)",
+            rows = 8,
+            allow_file_upload = zconf.ATDocument.allow_document_upload,
+            ),
+        ),
 
     atapi.StringField('shopOwnerAddress',
         widget = atapi.StringWidget(

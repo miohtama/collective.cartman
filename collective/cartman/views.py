@@ -76,7 +76,6 @@ class ProductDataExtractor(grok.CodeView):
         price = price.replace(",", ".")
         return Decimal(price).quantize(TWOPLACES, ROUND_HALF_UP)
 
-
     def getUID(self):
         """ AT and Dexterity compatible way to extract UID from a content item """
         # Make sure we don't get UID from parent folder accidentally
@@ -125,4 +124,30 @@ class AddToCartHelper(grok.View):
             self.json = extractor.getJSON()
         else:
             self.data = self.json = self.extractor = None
+
+
+class OrderHelper(grok.CodeView):
+    """
+    Manipulate order data based on the choices the user makes on the order from.
+
+    E.g. like delivery option.
+
+    You need to override this view for custom site logic.
+    """
+
+    grok.name("order-helper")
+    grok.context(Interface)
+
+    def process(self, productData, request):
+        """
+        @param productData: Cleaned product data extracted from the order form as list of dicts
+
+        @param request: HTTP request containing PloneFormGen HTTP request submission payload
+
+        @return: Updated product data odict
+        """
+        return productData
+
+    def render(self):
+        return "Call helper methods instead"
 

@@ -103,6 +103,11 @@ class CheckoutFiFormGenView(object):
 
         return True
 
+    def getProducts(self):
+        """
+        """
+        return self.data
+
 
 class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
 
@@ -120,9 +125,12 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
         if not self.updateOrderDataBySecret():
             return None
 
+        #
         self.products = json.loads(self.data["product-data"])
 
-        total = self.calculateTotal(self.products)
+        self.orderHelper = getMultiAdapter((self.context, self.request), name="order-helper")
+
+        total = self.total = self.calculateTotal(self.products)
 
         if not self.context.getSecret():
             raise RuntimeError("Merchant secret is not set")

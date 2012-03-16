@@ -11,6 +11,45 @@
 
         <p class="documentDescription" tal:content="context/Description" />
 
+        <table class="checkout-list table table-condensed">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="item python:view.getProducts().values">
+                    <td tal:content="product/id"></td>
+                    <td tal:content="product/name"></td>
+                    <td tal:content="product/price"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            Paino yht. : <span tal:content="view/orderHelper/getFormattedTotalWeight" />
+        </p>
+
+        <p tal:condition="python:view.data['shipping-method'] == 'transport'">
+            Deliver to:
+            <div>
+                <span tal:content="view/data/etunimi" /> <span tal:content="view/data/sukunimi" />
+                <span tal:content="view/data/etunimi" />
+            </div>
+        </p>
+
+        <p tal:condition="python:view.data['shipping-method'] == 'rtv'">
+            Deliver to:
+            <div>
+                <span tal:content="view/data/shipping-location" />
+            </div>
+        </p>
+
+
+        <p>Total: <span tal:content="view/total"></span></p>
+
         <form tal:condition="view/data|nothing" action="https://payment.checkout.fi/" method="POST">
                 <input type="hidden" tal:repeat="entry python:view.paymentData.items()" tal:attributes="name python:entry[0]; value python:entry[1]" />
                 <input type="submit" value="Siirry maksamaan checkout.fi palvelussa" />

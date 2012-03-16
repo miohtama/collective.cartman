@@ -64,5 +64,4 @@ class CheckoutFiPayPage(base.ATCTContent):
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
 
 
-
 atapi.registerType(CheckoutFiPayPage, PROJECTNAME)

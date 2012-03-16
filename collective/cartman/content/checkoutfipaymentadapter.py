@@ -74,8 +74,6 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
 
         data = []
 
-        reference_catalog = getToolByName(self, "reference_catalog")
-
         # Silently ignore bad counts
         good_entries =[ entry for entry in orderData if entry["count"] > 0]
 
@@ -276,6 +274,9 @@ class CheckoutFiPaymentAdapter(FormSaveDataAdapter):
         # XXX: In this context this really doesn't do anything but
         # validates the data
         productData = self.filterProductData(productData)
+
+        orderHelper = getMultiAdapter((self, REQUEST), name="order-helper")
+        productData = orderHelper.process(productData, REQUEST)
 
         # Fill in these so that
         orderSecret = str(random.randint(0, 999999999))
