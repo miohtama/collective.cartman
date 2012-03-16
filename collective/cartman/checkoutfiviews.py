@@ -265,6 +265,8 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         # fromname = porta.xxx?
 
         try:
+            print "Sending message:" + receiver
+            print message
             mailhost.send(message,
                         receiver,
                         source,
