@@ -18,7 +18,37 @@ TWOPLACES = Decimal("0.01")
 
 grok.templatedir("templates")
 
-class ProductDataExtractor(grok.CodeView):
+class HelperBaseView(grok.CodeView):
+    """ """
+
+    grok.baseclass()
+
+    def formatPrice(self, price):
+        """
+        """
+        price = str(price)
+        price = price.replace(",", ".")
+        return Decimal(price).quantize(TWOPLACES, ROUND_HALF_UP)
+
+    def formatWeight(self, weight):
+        """
+        """
+        weight = str(weight)
+        weight = weight.replace(",", ".")
+        return Decimal(weight).quantize(TWOPLACES, ROUND_HALF_UP)
+
+    def getTotalPrice(self, product):
+        """
+        """
+        return product.get("price", 0) * product.get("count", 0)
+
+    def getTotalWeight(self, product):
+        """
+        """
+        return product.get("weight", 0) * product.get("count", 0)
+
+
+class ProductDataExtractor(HelperBaseView):
     """
     This view will extract product data and JSON information from Plone content
     for the shopping cart to be consumed.
@@ -44,7 +74,7 @@ class ProductDataExtractor(grok.CodeView):
         # Make sure we don't get UID from parent folder accidentally
         context = self.context.aq_base
 
-        uid = sef.getUID()
+        uid = self.getUID()
         if not uid:
             return None
 
@@ -72,9 +102,7 @@ class ProductDataExtractor(grok.CodeView):
         if price is None:
             return None
 
-        price = str(price)
-        price = price.replace(",", ".")
-        return Decimal(price).quantize(TWOPLACES, ROUND_HALF_UP)
+        return self.formatPrice(price)
 
     def getUID(self):
         """ AT and Dexterity compatible way to extract UID from a content item """
@@ -126,7 +154,7 @@ class AddToCartHelper(grok.View):
             self.data = self.json = self.extractor = None
 
 
-class OrderHelper(grok.CodeView):
+class OrderHelper(HelperBaseView):
     """
     Manipulate order data based on the choices the user makes on the order from.
 

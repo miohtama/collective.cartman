@@ -105,8 +105,10 @@ class CheckoutFiFormGenView(object):
 
     def getProducts(self):
         """
+        @return: Iterable of products
         """
-        return self.data
+        s = self.data["product-data"]
+        return json.loads(s)
 
 
 class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
@@ -126,7 +128,7 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
             return None
 
         #
-        self.products = json.loads(self.data["product-data"])
+        self.products = self.getProducts()
 
         self.orderHelper = getMultiAdapter((self.context, self.request), name="order-helper")
 
@@ -141,21 +143,30 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
         """
         All prices are tax included prices.
 
-        @return: Total sum in cents
+        @return: Total sum in floating point
         """
         order_sum = 0
-        for entry in orderData:
-            order_sum += entry["price"]
-
-        return math.floor(order_sum*100)
+        for product in orderData:
+            order_sum += self.orderHelper.getTotalPrice(product)
+        return order_sum
 
     def createPaymentData(self, orderId, total):
-        """ """
+        """
+
+        @param total: Price as float
+        """
 
         # Checkout.fi data
+
+        if total <= 0:
+            raise RuntimeError("Could not calculate order total")
+
         d = {}
 
+        # Convert to cents
+        total = math.floor(total*100)
         d["AMOUNT"] = total
+
         d["MESSAGE"] = self.context.getMessage()
         d["MERCHANT"] = self.context.getSellerId()
         d["RETURN"] = self.form.absolute_url() + "/" + PROCESSED_ITEM_ID
@@ -233,7 +244,7 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
             self.sendCustomerEmail()
             self.sendShopOwnerEmail()
 
-        logger.warn("Payment complete, final state:" + self.state)
+        logger.warn(u"Payment complete, final state:" + self.state)
 
     def templatize(self, template):
         """
@@ -241,9 +252,17 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
 
         Use order data keys as template variables.
         """
+
+        if type(template) != unicode:
+            raise RuntimeError("Bad template:" + str(type(template)))
+
         output = template
         for key, value in self.data.items():
-            var = "$" + key
+
+            if type(value) == str:
+                value = value.decode("utf-8")
+
+            var = u"$" + unicode(key)
             output = output.replace(var, value)
 
         return output

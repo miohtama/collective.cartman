@@ -97,3 +97,27 @@ table.checkout-list thead th {
         text-align: center;
         margin-top: 40px;
 }
+
+/* Payment form styles */
+
+.payment-form {
+    margin-bottom: 20px;
+}
+
+/* Checkout form styles */
+.pfg-form .formControls {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.pfg-form .formControls input {
+    font-size: 120%;
+}
+
+.payment-form-order-totals {
+    text-align: right;
+}
+
+.payment-form .buttons {
+    text-align: center;
+}
