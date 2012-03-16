@@ -315,9 +315,10 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         source = portal.email_from_address
         # fromname = porta.xxx?
 
+        import logging
+        logger = logging.getLogger("ShopEmail")
+
         try:
-            logger.info(u"Sending message:" + receiver)
-            logger.info(message.encode("utf-8"))
             mailhost.send(message,
                         receiver,
                         source,
@@ -325,10 +326,13 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
                         #subtype='plain',
                         charset="utf-8",
                         immediate = True)
+
+            logger.info(u"Sending message:" + receiver)
+            logger.info(message.encode("utf-8"))
+
+
         except Exception, e:
             # Gracefully handle SMTP errors
-            import logging
-            logger = logging.getLogger("ShopEmail")
             logger.exception(e)
             pass
 
