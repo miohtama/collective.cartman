@@ -316,8 +316,8 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         # fromname = porta.xxx?
 
         try:
-            print "Sending message:" + receiver
-            print message
+            logger.info(u"Sending message:" + receiver)
+            logger.info(message.encode("utf-8"))
             mailhost.send(message,
                         receiver,
                         source,
