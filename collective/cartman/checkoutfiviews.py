@@ -286,8 +286,8 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         data = self.data
         receiver = data["email"]
         complete = self.getCompleteItem()
-        subject = complete.getCustomerEmailSubject()
-        msg = complete.getCustomerEmail()
+        subject = complete.getCustomerEmailSubject().decode("utf-8")
+        msg = complete.getCustomerEmail().decode("utf-8")
         self.sendEmail(subject, receiver, msg)
 
     def sendShopOwnerEmail(self):
@@ -296,7 +296,7 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         data = self.data
         complete = self.getCompleteItem()
         receiver = complete.getShopOwnerAddress()
-        msg = complete.getShopOwnerEmail()
+        msg = complete.getShopOwnerEmail().decode("utf-8")
         subject = "Order #" + str(self.orderRowId)
         self.sendEmail("New order", receiver, msg)
 
