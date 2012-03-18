@@ -4,6 +4,7 @@
 """
 
 import json
+import logging
 
 from zope.interface import Interface
 from zope.component import getMultiAdapter, queryMultiAdapter
@@ -17,6 +18,18 @@ from decimal import Decimal, ROUND_HALF_UP
 TWOPLACES = Decimal("0.01")
 
 grok.templatedir("templates")
+
+logger = logging.getLogger("cart")
+
+def safe_float(val):
+    """ """
+
+    if type(val) == str or type(val) == unicode:
+        val = val.replace(",", ".")
+
+    val = float(val)
+
+    return val
 
 class HelperBaseView(grok.CodeView):
     """ """
@@ -45,8 +58,12 @@ class HelperBaseView(grok.CodeView):
     def getTotalWeight(self, product):
         """
         """
-        return product.get("weight", 0) * product.get("count", 0)
-
+        try:
+            weight = safe_float(product.get("weight", 0))
+            return weight * product.get("count", 0)
+        except Exception, e:
+            logger.exception(e)
+            return 0
 
 class ProductDataExtractor(HelperBaseView):
     """

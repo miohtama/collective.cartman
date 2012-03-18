@@ -315,9 +315,6 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         source = portal.email_from_address
         # fromname = porta.xxx?
 
-        import logging
-        logger = logging.getLogger("ShopEmail")
-
         try:
             mailhost.send(message,
                         receiver,

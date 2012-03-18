@@ -3,6 +3,26 @@ input[type=number] {
         height: auto;
 }
 
+/* By default, display "no entries" message */
+.empty {
+    display: block;
+}
+
+.filled {
+    display: none;
+}
+
+/* Deactivate when list has items */
+.has-items .empty {
+    display: none;
+}
+
+/* Active when list has items */
+.has-items .filled {
+    display: block;
+}
+
+
 #mini-cart .btn {
         margin-left: 10px;
         margin-bottom: 5px;

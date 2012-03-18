@@ -2,8 +2,8 @@
 <object name="portal_javascripts">
 
     <javascript
-        id="++resource++collective.cartman/cartman/jquery.transparency.min.js"
-        cacheable="True" compression="none" cookable="True"
+        id="++resource++collective.cartman/cartman/transparency.js"
+        cacheable="True" compression="safe" cookable="True"
         enabled="True" expression=""  inline="False" />
 
     <javascript

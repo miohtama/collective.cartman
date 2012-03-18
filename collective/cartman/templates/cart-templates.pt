@@ -8,10 +8,14 @@ to the page body.
 <div id="templates" style="display: none">
     <!-- Shopping cart summary appearing on every page -->
     <div id="mini-cart-template">
-        <div>
-            <i class="icon-shopping-cart"></i>
-            <span data-bind="empty"> Your shopping cart is empty. </span>
-            <span data-bind="filled"> <span>You have </span> <b data-bind="count"></b> <span> items (</span><b data-bind="total"></b> <span> EUR)</span>.
+        <div class="mini-cart-container">
+            <span data-bind="empty">
+                <i class="icon-shopping-cart"></i>
+                Your shopping cart is empty.
+            </span>
+            <span data-bind="filled">
+                <i class="icon-shopping-cart"></i>
+                <span>You have </span> <b data-bind="count"></b> <span> items (</span><b data-bind="total"></b> <span> EUR)</span>.
                 <button class="btn">
                     <i class="icon-edit"></i>
                     Edit

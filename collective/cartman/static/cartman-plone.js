@@ -20,11 +20,14 @@ window.getCart = null;
      * - Print checout list on PFG form (non-editable)
      */
     function retrofitPloneFormGen() {
+
         var field = $(cartmanOptions.productFieldSelector);
 
         if(field.size() === 0) {
             return;
         }
+
+        console.log("Retrofit PFG");
 
         // Fill in <hidden> input with data to be posted to Plone server
         var productJSON = cartman.getContentsJSON();
@@ -34,21 +37,37 @@ window.getCart = null;
         // using Transparency
         var data = ui.getCartTemplateData();
 
+        console.log("Data:");
+        console.log(data);
+
         // Template directives
         var directives = {
 
             // Show empty cart warning
-            empty : function(elem) { if(data.count > 0) { elem.remove(); } },
+            'checkout-data-container' : function(elem) {
+                var $elem = $(elem);
 
-            // Show empty cart warning
-            filled : function(elem) { if(data.count <= 0) { elem.remove(); } },
+                if(cartman.hasContent()) {
+                    $elem.addClass("has-items");
+                } else {
+                    $elem.removeClass("has-items");
+                }
+             },
 
             // Nested directives for product lines
             products : {
                 price : function() { return ui.formatPrice(this.price); },
                 total : function() { return ui.formatPrice(this.count*this.price); },
                 // Fill in image column only if image URL is available
-                "img@src" : function(elem) { if(this.img) { return this.img; } else { elem.remove(); } }
+                // Set image source or hide image
+                'product-img' : function(elem) {
+                    elem = $(elem);
+                    if(this.img) {
+                        elem.attr("src", this.img);
+                    } else {
+                        elem.hide();
+                    }
+                }
             }
         };
 
@@ -56,15 +75,14 @@ window.getCart = null;
 
         var template = $(cartmanOptions.checkoutFormTemplateSelector);
 
-        if(template.size() == 0) {
+        if(template.size() === 0) {
             throw new Error("Checkout form template missing:" + cartmanOptions.checkoutFormTemplateSelector);
         }
 
-        // Explicitly used Transparency Template on jQuery node
-        listing.data("template", template);
+        listing.append(template.children().clone());
 
         // Render the template
-        listing.render(data, directives);
+        listing.render(data, directives, true);
 
         listing.insertAfter(field);
     }
@@ -84,7 +102,7 @@ window.getCart = null;
         ui = new CartmanUI({
             cartman : cartman,
             selectors : {
-                addToCartAnimator : "input[type=number]"
+                addToCartAnimator : "input[type=number]",
             }
         });
 
