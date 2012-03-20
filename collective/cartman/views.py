@@ -53,7 +53,18 @@ class HelperBaseView(grok.CodeView):
     def getTotalPrice(self, product):
         """
         """
-        return product.get("price", 0) * product.get("count", 0)
+        try:
+            return product.get("price", 0) * product.get("count", 0)
+        except Exception, e:
+            logger.error("Could not calcualte price")
+            logger.exception(e)
+
+            try:
+                logger.error(u"%s" % product.get("price", None))
+                logger.error(u"%s" % product.get("count", None))
+            except:
+                pass
+            return 99999999
 
     def getTotalWeight(self, product):
         """
