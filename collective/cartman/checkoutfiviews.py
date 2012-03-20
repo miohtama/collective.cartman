@@ -316,6 +316,13 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         # fromname = porta.xxx?
 
         try:
+
+            try:
+                logger.info(u"Sending message:" + receiver)
+                logger.info(message.encode("utf-8"))
+            except:
+                pass
+
             mailhost.send(message,
                         receiver,
                         source,
@@ -324,8 +331,6 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
                         charset="utf-8",
                         immediate = True)
 
-            logger.info(u"Sending message:" + receiver)
-            logger.info(message.encode("utf-8"))
 
 
         except Exception, e:
