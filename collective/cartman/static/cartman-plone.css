@@ -141,3 +141,23 @@ table.checkout-list thead th {
 .payment-form .buttons {
     text-align: center;
 }
+
+/* IE7 fixes */
+
+.pb-ajax {
+
+}
+
+/* IE7 fix */
+#checkout-popup {
+    z-index: 15000;
+    position: relative;
+    background: magenta;
+}
+
+
+#checkout-popup .close {
+    z-index: 15001;
+}
+
+

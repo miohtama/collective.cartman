@@ -87,6 +87,13 @@ window.getCart = null;
         listing.insertAfter(field);
     }
 
+    /**
+     * IE7 users need a pop-up because animation does not work
+     */
+    function onCartAdd() {
+
+    }
+
     function initCartman() {
 
         // No double init
@@ -102,7 +109,7 @@ window.getCart = null;
         ui = new CartmanUI({
             cartman : cartman,
             selectors : {
-                addToCartAnimator : "input[type=number]",
+                addToCartAnimator : ".add-count"
             }
         });
 
@@ -117,6 +124,9 @@ window.getCart = null;
             // cartmanOptions is populated by a viewlet
             window.location = cartmanOptions.checkoutURL;
         };
+
+        // IE specific add to cart message
+        cartman.on("cartadd", onCartAdd);
 
         if(window.setupCartman) {
             window.setupCartman(cartman, ui);

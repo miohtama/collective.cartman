@@ -92,7 +92,12 @@ class MiniCart(grok.Viewlet):
 class CheckoutPopUp(grok.Viewlet):
     """ Pop-up window for checkout """
     grok.context(Interface)
-    grok.viewletmanager(IPortalTop)
+
+    # Note: IE7 is picky about where these are placed
+    # due to correct "rendering context"
+    # http://brenelz.com/blog/squish-the-internet-explorer-z-index-bug/
+    # http://stackoverflow.com/questions/1287439/ie7-z-index-problem
+    grok.viewletmanager(IPortalFooter)
     grok.template("checkout-popup")
 
 class ProductData(grok.Viewlet):
