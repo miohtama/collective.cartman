@@ -54,7 +54,7 @@ class HelperBaseView(grok.CodeView):
         """
         """
         try:
-            return product.get("price", 0) * product.get("count", 0)
+            return safe_float(product.get("price", 0)) * safe_float(product.get("count", 0))
         except Exception, e:
             logger.error("Could not calcualte price")
             logger.exception(e)
@@ -71,7 +71,7 @@ class HelperBaseView(grok.CodeView):
         """
         try:
             weight = safe_float(product.get("weight", 0))
-            return weight * product.get("count", 0)
+            return weight * safe_float(product.get("count", 0))
         except Exception, e:
             logger.exception(e)
             return 0
