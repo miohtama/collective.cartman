@@ -16,6 +16,8 @@ from zope.component import getMultiAdapter, queryMultiAdapter
 from five import grok
 from Products.CMFCore.utils import getToolByName
 
+from plone.app.uuid.utils import uuidToObject
+
 from collective.cartman.interfaces import IHideMiniCart
 from collective.cartman import checkoutfi
 
@@ -28,6 +30,8 @@ ORDER_ADAPTER_ID="order"
 
 PROCESSED_ITEM_ID="order-processed"
 
+STOCK_ERROR = "Not enough products in stock"
+
 logger = logging.getLogger("checkout.fi")
 
 class CheckoutFiFormGenView(object):
@@ -36,6 +40,9 @@ class CheckoutFiFormGenView(object):
 
     These views can be applied for items which reside in PFG folder.
     """
+
+    def __init__():
+        self.orderedProductsInStock = True
 
     def getForm(self):
         return self.context.aq_parent
@@ -114,6 +121,51 @@ class CheckoutFiFormGenView(object):
         else:
             return []
 
+
+    def productsInStock(self, product):
+        """ Checks if stock has enough product to fulfill the order.
+
+            Also sets self.orderedProductsInStock to False if some products are missing.
+            This is used to change the order button to a text that tells about the problem.
+
+            @return: Boolean value depicting if there is enough given product in stock
+        """
+
+
+        uuid = product.get("UID", "")
+        if uuid == None:
+            #Skip Delivery method
+            return True
+
+        obj = uuidToObject(uuid)
+        if not obj:
+            # Could not find object
+            logger.warn(u"Could not look-up UUID:", uuid)
+
+            self.orderedProductsInStock = False
+
+            return False
+
+        if product["count"] > obj.stock:
+
+            self.orderedProductsInStock = False
+
+            return False
+
+        return True
+
+
+
+    def showCheckoutButton(self):
+        """
+            returns True if all products in cart are in stock. 
+            self.orderedProductsInStock is updated by productsInStock method.
+
+            @return: boolean Do we have enough stock for all products in cart
+        """
+        return self.orderedProductsInStock
+
+
     def calculateTotal(self, orderData):
         """
         All prices are tax included prices.
@@ -134,6 +186,7 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
     grok.context(CheckoutFiPayPage)
     grok.name("checkout-fi-pay")
     grok.template("checkout-fi-pay-page")
+
 
     def update(self):
         """
@@ -244,6 +297,7 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         if self.state != "INVALID":
             # Save paymet payment processor refernce
             ref = request.form.get("REFERENCE")
+            self.updateStockCounts()
             self.updateOrderDataByReferenceNumber(ref)
             self.updateOrderState()
 
@@ -251,6 +305,12 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
             self.sendShopOwnerEmail()
 
         logger.warn(u"Payment complete, final state:" + self.state)
+
+
+    def updateStockCounts():
+        """ Implement this to add your stock count update logic """
+        pass
+
 
     def getExtraTemplateVariables(self):
         """
