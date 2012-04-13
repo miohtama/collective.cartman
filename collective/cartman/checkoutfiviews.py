@@ -41,8 +41,6 @@ class CheckoutFiFormGenView(object):
     These views can be applied for items which reside in PFG folder.
     """
 
-    def __init__():
-        self.orderedProductsInStock = True
 
     def getForm(self):
         return self.context.aq_parent
@@ -122,50 +120,6 @@ class CheckoutFiFormGenView(object):
             return []
 
 
-    def productsInStock(self, product):
-        """ Checks if stock has enough product to fulfill the order.
-
-            Also sets self.orderedProductsInStock to False if some products are missing.
-            This is used to change the order button to a text that tells about the problem.
-
-            @return: Boolean value depicting if there is enough given product in stock
-        """
-
-
-        uuid = product.get("UID", "")
-        if uuid == None:
-            #Skip Delivery method
-            return True
-
-        obj = uuidToObject(uuid)
-        if not obj:
-            # Could not find object
-            logger.warn(u"Could not look-up UUID:", uuid)
-
-            self.orderedProductsInStock = False
-
-            return False
-
-        if product["count"] > obj.stock:
-
-            self.orderedProductsInStock = False
-
-            return False
-
-        return True
-
-
-
-    def showCheckoutButton(self):
-        """
-            returns True if all products in cart are in stock. 
-            self.orderedProductsInStock is updated by productsInStock method.
-
-            @return: boolean Do we have enough stock for all products in cart
-        """
-        return self.orderedProductsInStock
-
-
     def calculateTotal(self, orderData):
         """
         All prices are tax included prices.
@@ -188,6 +142,20 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
     grok.template("checkout-fi-pay-page")
 
 
+    def productInStock(self, productId):
+        """
+        Checks if given productId is in self.unavailableProductIds
+
+        @productId String id of the product. Not UID
+        @return True if we have enough products in stock
+        """
+        
+        for id in self.unavailableProductIds:
+            if id == productId:
+                return False
+
+        return True
+
     def update(self):
         """
         """
@@ -195,10 +163,16 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
         if not self.updateOrderDataBySecret():
             return None
 
-        #
-        self.products = self.getProducts()
-
         self.orderHelper = getMultiAdapter((self.context, self.request), name="order-helper")
+
+        self.products = self.getProducts()
+        
+        unavailableProducts = self.context.restrictedTraverse("@@stock-has-items").checkStock(self.products)
+
+        self.unavailableProductIds = []
+
+        for product in unavailableProducts:
+            self.unavailableProductIds.append(product["id"])
 
         total = self.total = self.calculateTotal(self.products)
 
@@ -206,6 +180,15 @@ class CheckoutFiPayPage(grok.View, CheckoutFiFormGenView):
             raise RuntimeError("Merchant secret is not set")
 
         self.paymentData = self.createPaymentData(self.data["order-id"], total)
+
+    def showCheckoutButton(self):
+        """
+            returns True if all products in cart are in stock. 
+            self.orderedProductsInStock is updated by productsInStock method.
+
+            @return: boolean Do we have enough stock for all products in cart
+        """
+        return len(self.unavailableProductIds) == 0
 
     def createPaymentData(self, orderId, total):
         """
