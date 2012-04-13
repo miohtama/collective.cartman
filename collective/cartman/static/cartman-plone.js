@@ -91,7 +91,7 @@ window.getCart = null;
      * IE7 users need a pop-up because animation does not work
      */
     function onCartAdd() {
-
+        //TODO: Add this
     }
 
     function initCartman() {
