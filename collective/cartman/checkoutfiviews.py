@@ -280,9 +280,10 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         if self.state != "INVALID":
             # Save paymet payment processor refernce
             ref = request.form.get("REFERENCE")
-            self.updateStockCounts()
             self.updateOrderDataByReferenceNumber(ref)
             self.updateOrderState()
+
+            self.updateStockCounts()
 
             self.sendCustomerEmail()
             self.sendShopOwnerEmail()
@@ -290,7 +291,7 @@ class CheckoutFiConfirmPage(grok.View, CheckoutFiFormGenView):
         logger.warn(u"Payment complete, final state:" + self.state)
 
 
-    def updateStockCounts():
+    def updateStockCounts(self):
         """ Implement this to add your stock count update logic """
         pass
 
