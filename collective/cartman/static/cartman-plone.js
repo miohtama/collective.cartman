@@ -154,6 +154,7 @@ window.getCart = null;
 
 
     // Print checkout popup
+    // NOTE: Make print.css hide everything except the popup.
     window.printCheckout = function() {
         $(document.body).addClass("travelplanner-print");
         $("#checkout-popup").detach().appendTo(document.body);
