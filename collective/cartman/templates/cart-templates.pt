@@ -9,21 +9,19 @@ to the page body.
     <!-- Shopping cart summary appearing on every page -->
     <div id="mini-cart-template">
         <div class="mini-cart-container">
-            <span data-bind="empty">
-                <i class="icon-shopping-cart"></i>
-                Your shopping cart is empty.
-            </span>
             <span data-bind="filled">
-                <i class="icon-shopping-cart"></i>
-                <span>You have </span> <b data-bind="count"></b> <span> items (</span><b data-bind="total"></b> <span> EUR)</span>.
-                <button class="btn">
-                    <i class="icon-edit"></i>
-                    Edit
-                </button>
-                <button class="btn">
-                    <i class="icon-check"></i>
-                    Checkout
-                </button> </span>
+                <span>You have </span> <b data-bind="count"></b> <span> items </span>.
+                <div>
+                    <button class="btn">
+                        <i class="icon-edit"></i>
+                        Edit
+                    </button>
+                    <button class="btn">
+                        <i class="icon-check"></i>
+                        Print
+                    </button>
+                </div>
+            </span>
         </div>
     </div>
     <!--
@@ -40,22 +38,7 @@ to the page body.
                         <th><!-- image --></th>
                         <th> SKU </th>
                         <th> Name </th>
-                        <th  class="column-price">
-                        <div>
-                            Price
-                        </div>
-                        <div class=discreet>
-                            (EUR, VAT 23%)
-                        </div></th>
-                        <th class="column-count"> Count </th>
-                        <th class="column-total">
-                        <div>
-                            Total
-                        </div>
-                        <div class=discreet>
-                            (EUR, VAT 23%)
-                        </div></th>
-                        <th> Remove </th>
+                        <th class="column-remove-th"> Remove </th>
                     </tr>
                 </thead>
                 <tbody data-bind="products">
@@ -67,11 +50,6 @@ to the page body.
                         <td>
                             <a data-bind="name"></a>
                         </td>
-                        <td data-bind="price" class="column-price"></td>
-                        <td class="column-count">
-                        <input data-bind="count" min="0" type="number" val="" />
-                        </td>
-                        <td data-bind="total" class="column-total"></td>
                         <td class=column-remove>
                             <span style="color: red">x</span>
                         </td>
@@ -79,9 +57,6 @@ to the page body.
                 </tbody>
             </table>
             <div class="checkout-footer">
-                <div class="checkout-total">
-                    Total <b data-bind="total"></b> EUR
-                </div>
                 <div class="checkout-buttons">
 
                     <div class="left">
@@ -92,14 +67,9 @@ to the page body.
                     </div>
 
                     <div class="right">
-                        <button type="button" class="btn update">
-                            <i class="icon-refresh"></i>
-                            Update counts
-                        </button>
-
-                        <button type="button" class="btn btn-success checkout">
+                        <button type="button" class="btn btn-success print">
                             <i class="icon-white icon-check"></i>
-                            Checkout
+                            Print
                         </button>
                     </div>
 
