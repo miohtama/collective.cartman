@@ -19,14 +19,16 @@ to the page body.
                 <div>
                     <button class="btn printButton">
                         <i class="icon-print"></i>
-                        Print
+                        Tulosta
+                    </button>
+                    <button class="btn showButton">
+                        <i class="icon-eye-open"></i>
+                        Näytä
                     </button>
                 </div>
-                
-                <div class="emptyCartText">
-                    <p>Kerää sivuja matkasuunnitelmaan, jonka voit tulostaa. Voit lisätä matkasuunnitelmaan kohteita, yrityksiä, tapahtumia ja aktiviteetteja.
 
-                    Lisää tämä kohde matkasuunnitelmaasi.</p>
+                <div class="emptyCartText">
+                    <p>Kerää sivuja matkasuunnitelmaan, jonka voit tulostaa. Voit lisätä matkasuunnitelmaan kohteita, yrityksiä, tapahtumia ja aktiviteetteja.</p>
                 </div>
             </span>
         </div>
@@ -53,8 +55,11 @@ to the page body.
                         <td>
                             <img data-bind="img" />
                         </td>
-                        <td data-bind="name"></td>
-                        <td data-bind="description"></td>
+                        <td><a data-bind="name" /></td>
+                        <td data-bind="description">
+                            <div data-bind="desc"></div>
+                            <div data-bind="url"></div>
+                        </td>
                         <td class="column-remove">
                             <span style="color: red">x</span>
                         </td>
@@ -67,14 +72,14 @@ to the page body.
                     <div class="left">
                         <button type="button" class="btn btn-danger remove-all">
                             <i class="icon-white icon-remove"></i>
-                            Remove all
+                            Poista kaikki
                         </button>
                     </div>
 
                     <div class="right">
-                        <button type="button" class="btn btn-success print">
-                            <i class="icon-white icon-check"></i>
-                            Print
+                        <button type="button" class="btn btn-success printButton">
+                            <i class="icon-white icon-print"></i>
+                            Tulosta
                         </button>
                     </div>
 
@@ -91,5 +96,10 @@ to the page body.
         <p class="empty-checkout">
             No items in the cart
         </p>
+    </div>
+
+    <!-- counter template -->
+    <div id="counter-template">
+        <span>Matkasuunnitelma (<span data-bind="count"></span>)</span>
     </div>
 </div>

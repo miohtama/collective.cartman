@@ -163,12 +163,20 @@ table.checkout-list thead th {
 .travelplannerPortlet {
     text-align: center;
 }
+.travelplannerPortlet .showButton,
 .travelplannerPortlet .printButton {
     display: none;
 }
+.travelplannerPortlet .has-items .showButton,
 .travelplannerPortlet .has-items .printButton {
     display: inline;
 }
 .travelplannerPortlet .has-items .emptyCartText {
     display: none;
+}
+
+.travelplannerPortlet .remove {
+    cursor: pointer;
+    color: red;
+    font-weight: bold;
 }

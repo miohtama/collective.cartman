@@ -183,10 +183,19 @@
 
             elem.render(data, directives, true);
 
-            // Bind minicart link to open the checkout dialog
-            elem.find(".printButton").click(function(e) {
-                //self.openCheckoutPopup();
 
+            // update travelplanner counter
+            var counterElem = $("#travelplannercounter");
+            counterElem.empty();
+            if (source.count > 0) {
+                var counterTemplate = $("#counter-template");
+                counterElem.append(counterTemplate.children().clone());
+                counterElem.render(data);
+
+                counterElem.click(self.openCheckoutPopup);
+            }
+
+            elem.find(".printButton").click(function(e) {
                 $(document.body).addClass("travelplanner-print");
                 $("#checkout-popup").detach().addClass("print").appendTo(document.body);
                 print();
@@ -194,6 +203,11 @@
                 $(document.body).removeClass("travelplanner-print");
 
                 e.preventDefault();
+            });
+            // Bind minicart link to open the checkout dialog
+            elem.find(".showButton").click(function(e) {
+                e.preventDefault();
+                self.openCheckoutPopup();
             });
 
             elem.find(".remove").click(function() {
@@ -291,6 +305,10 @@
                         href : function() {
                             return this.url;
                         }
+                    },
+
+                    description : function() {
+                        return {desc: this.description, url: this.url};
                     }
 
                 }
@@ -347,6 +365,16 @@
                 // Close pop-up when an item link in checkout pop-up is clicked
                 // because the link might point to the current page
                 elem.data("overlay").close();
+            });
+
+            elem.find(".printButton").click(function(e) {
+                $(document.body).addClass("travelplanner-print");
+                $("#checkout-popup").detach().addClass("print").appendTo(document.body);
+                print();
+                $("#checkout-popup").detach().removeClass("print").after("#templates");
+                $(document.body).removeClass("travelplanner-print");
+
+                e.preventDefault();
             });
 
             self.setupCheckoutPopup(elem);
