@@ -24,8 +24,6 @@ input[type=number] {
 
 
 #mini-cart .btn {
-        margin-left: 10px;
-        margin-bottom: 5px;
 }
 
 .add-count {
@@ -161,3 +159,16 @@ table.checkout-list thead th {
 }
 
 
+/* Travelplanner css */
+.travelplannerPortlet {
+    text-align: center;
+}
+.travelplannerPortlet .printButton {
+    display: none;
+}
+.travelplannerPortlet .has-items .printButton {
+    display: inline;
+}
+.travelplannerPortlet .has-items .emptyCartText {
+    display: none;
+}

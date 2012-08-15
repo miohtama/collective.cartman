@@ -10,16 +10,23 @@ to the page body.
     <div id="mini-cart-template">
         <div class="mini-cart-container">
             <span data-bind="filled">
-                <span>You have </span> <b data-bind="count"></b> <span> items </span>.
+                <ul data-bind="products">
+                    <li class="checkout-line">
+                        <a data-bind="name"></a>
+                        <span class="remove">x</span>
+                    </li>
+                </ul>
                 <div>
-                    <button class="btn">
-                        <i class="icon-edit"></i>
-                        Edit
-                    </button>
-                    <button class="btn">
-                        <i class="icon-check"></i>
+                    <button class="btn printButton">
+                        <i class="icon-print"></i>
                         Print
                     </button>
+                </div>
+                
+                <div class="emptyCartText">
+                    <p>Kerää sivuja matkasuunnitelmaan, jonka voit tulostaa. Voit lisätä matkasuunnitelmaan kohteita, yrityksiä, tapahtumia ja aktiviteetteja.
+
+                    Lisää tämä kohde matkasuunnitelmaasi.</p>
                 </div>
             </span>
         </div>
@@ -36,8 +43,8 @@ to the page body.
                 <thead>
                     <tr>
                         <th><!-- image --></th>
-                        <th> SKU </th>
                         <th> Name </th>
+                        <th> Description </th>
                         <th class="column-remove-th"> Remove </th>
                     </tr>
                 </thead>
@@ -46,11 +53,9 @@ to the page body.
                         <td>
                             <img data-bind="img" />
                         </td>
-                        <td data-bind="id"></td>
-                        <td>
-                            <a data-bind="name"></a>
-                        </td>
-                        <td class=column-remove>
+                        <td data-bind="name"></td>
+                        <td data-bind="description"></td>
+                        <td class="column-remove">
                             <span style="color: red">x</span>
                         </td>
                     </tr>

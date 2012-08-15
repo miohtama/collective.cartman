@@ -141,7 +141,8 @@
 
             var data = {
                 count : source.count,
-                total : source.total
+                total : source.total,
+                products : source.products
             };
 
             //console.log("Got data");
@@ -158,9 +159,24 @@
                     } else {
                         $elem.removeClass("has-items");
                     }
-                 }
+                },
+
+                products: {
+                    "checkout-line":  {
+
+                        // Set logic parameter, used by event handling code
+                        "data-id" : function() { return this.id; }
+
+                    },
+                    name : {
+                        href : function() {
+                            return this.url;
+                        }
+                    }
+                }
 
             };
+
 
             elem.empty();
             elem.append(template.children().clone());
@@ -168,10 +184,39 @@
             elem.render(data, directives, true);
 
             // Bind minicart link to open the checkout dialog
-            elem.find("button").click(function(e) {
-                self.openCheckoutPopup();
+            elem.find(".printButton").click(function(e) {
+                //self.openCheckoutPopup();
+
+                $(document.body).addClass("travelplanner-print");
+                $("#checkout-popup").detach().addClass("print").appendTo(document.body);
+                print();
+                $("#checkout-popup").detach().removeClass("print").after("#templates");
+                $(document.body).removeClass("travelplanner-print");
+
                 e.preventDefault();
             });
+
+            elem.find(".remove").click(function() {
+                var product = $(this).parents(".checkout-line");
+                var id = product.attr("data-id");
+                self.cartman.remove(id);
+            });
+
+            // Check if product already in cart
+            var curProduct = self.getItemData(elem.parent().find(".product"));
+            var productFound = false;
+            for (var i=0; i<source.count; i++) {
+                if (curProduct.id == source.products[i].id) {
+                    productFound = true;
+                    break;
+                }
+            }
+            if (productFound) {
+                elem.parent().find(".add-button").hide();
+            } else {
+                elem.parent().find(".add-button").show();
+            }
+
         },
 
         /**

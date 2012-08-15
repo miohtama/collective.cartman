@@ -152,19 +152,8 @@ window.getCart = null;
 
     };
 
-
-    // Print checkout popup
-    // NOTE: Make print.css hide everything except the popup.
-    window.printCheckout = function() {
-        $(document.body).addClass("travelplanner-print");
-        $("#checkout-popup").detach().appendTo(document.body);
-        print();
-        $("#checkout-popup").detach().after("#templates");
-    }
-
     $(document).ready(function() {
         initCartman();
-        $(".checkout-buttons button[class*=print]").click(window.printCheckout);
     });
 
 })(jQuery);
