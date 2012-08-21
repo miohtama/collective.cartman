@@ -18,11 +18,11 @@ to the page body.
                 </ul>
                 <div>
                     <button class="btn printButton">
-                        <i class="icon-print"></i>
+                        <i class="icon-print icon-white"></i>
                         Tulosta
                     </button>
                     <button class="btn showButton">
-                        <i class="icon-eye-open"></i>
+                        <i class="icon-eye-open icon-white"></i>
                         Näytä
                     </button>
                 </div>
@@ -83,7 +83,7 @@ to the page body.
                     <div class="right">
 
                         <button type="button" class="btn btn-success emailButton">
-                            <i class="icon-white icon-print"></i>
+                            <i class="icon-white icon-envelope"></i>
                             Läheta sähköpostilla
                         </button>
 
