@@ -224,16 +224,22 @@
             // Check if product already in cart
             var curProduct = self.getItemData(elem.parent().find(".product"));
             var productFound = false;
-            for (var i=0; i<source.count; i++) {
-                if (curProduct.id == source.products[i].id) {
-                    productFound = true;
-                    break;
+
+            if(curProduct) {
+                for (var i=0; i<source.count; i++) {
+                    if (curProduct.id == source.products[i].id) {
+                        productFound = true;
+                        break;
+                    }
                 }
             }
+
             if (productFound) {
-                elem.parent().find(".add-button").hide();
+                //elem.parent().find(".add-button").hide();
+                $(".add-product-form .add-button").hide();
             } else {
-                elem.parent().find(".add-button").show();
+                $(".add-product-form .add-button").show();
+                //elem.parent().find(".add-button").show();
             }
 
         },
@@ -479,7 +485,7 @@
         stockHasItems : function(item, input) {
             var itemCountInCart;
             try {
-                var itemCountInCart = parseFloat(this.cartman.get(item.id).count);
+                itemCountInCart = parseFloat(this.cartman.get(item.id).count);
             } catch(e) {
                 itemCountInCart = 0;
             }
@@ -529,22 +535,7 @@
                     return;
                 }
 
-                // Out of stock, don't install click handlers
-                if(!self.isProductAvailable(product, item)) {
-                    return;
-                }
-
-
                 var addCountInput = product.find(".add-count");
-
-                //NOTE! This is not used atmo. We should add unitSize to the logic for this to be usable
-                //change event fires only after blur. Also oninput does not work on IE9< so we need the change event too
-                /*addCountInput[0].oninput = function() {
-                    handleProductStockSaldo(this, product, item);
-                };
-                addCountInput.change(function() {
-                    handleProductStockSaldo(this, product, item);
-                });*/
 
                 product.find(".add-button").click(function() {
 
@@ -583,8 +574,8 @@
             var val = elem.attr("data-product");
 
             if(!val) {
-                console.error("Product data missing for element:");
-                console.log(elem.get(0));
+                //console.error("Product data missing for element:");
+                //console.log(elem.get(0));
                 return null;
             }
 

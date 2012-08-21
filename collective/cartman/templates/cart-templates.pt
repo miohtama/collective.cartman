@@ -81,6 +81,12 @@ to the page body.
                     </div>
 
                     <div class="right">
+
+                        <button type="button" class="btn btn-success emailButton">
+                            <i class="icon-white icon-print"></i>
+                            Läheta sähköpostilla
+                        </button>
+
                         <button type="button" class="btn btn-success printButton">
                             <i class="icon-white icon-print"></i>
                             Tulosta
@@ -104,6 +110,6 @@ to the page body.
 
     <!-- counter template -->
     <div id="counter-template">
-        <span>Matkasuunnitelma (<span data-bind="count"></span>)</span>
+        <span>Oma Kalajoki (<span data-bind="count"></span>)</span>
     </div>
 </div>

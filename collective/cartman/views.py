@@ -5,6 +5,7 @@
 
 import json
 import logging
+from StringIO import StringIO
 
 from zope.interface import Interface
 from zope.component import getMultiAdapter, queryMultiAdapter
@@ -12,6 +13,10 @@ from five import grok
 
 from utilities import has_mini_cart
 from plone.uuid.interfaces import IUUID
+from plone.app.uuid.utils import uuidToObject
+from Products.CMFCore.utils import getToolByName
+
+from Products.CMFCore.interfaces import ISiteRoot
 
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -189,8 +194,6 @@ class AddToCartHelper(grok.View):
 
         extractor = queryMultiAdapter((context, self.request), name="product-data-extractor")
 
-        import pdb ; pdb.set_trace()
-
         if extractor:
             self.extractor = extractor
             self.data = extractor.getData()
@@ -223,4 +226,118 @@ class OrderHelper(HelperBaseView):
 
     def render(self):
         return "Call helper methods instead"
+
+
+class GenerateText(grok.CodeView):
+    """
+    Generate plain text presentation of the cart
+    """
+    grok.name("cart-generate-text")
+    grok.context(ISiteRoot)
+
+    def filterProductData(self, orderData):
+        """
+        Extract counts and product ids from the order and count their real prices.
+        This for the case that the user does not submit bad order data.
+        """
+
+        data = []
+
+        # Silently ignore bad counts
+        good_entries = [entry for entry in orderData if entry["count"] > 0]
+
+        for entry in good_entries:
+            uid = entry["uid"]
+            if not uid:
+                raise RuntimeError(u"Product data entry missing UID:", entry)
+
+            obj = uuidToObject(uid)
+            if not obj:
+                # Could not find object
+                raise RuntimeError(u"Could not look-up UUID:", uid)
+
+            product_data_extractor = getMultiAdapter((obj, self.request), name="product-data-extractor")
+
+            # Set price etc. on the server-side
+            # only count can come from the client
+
+            real_data = product_data_extractor.getData()
+            if real_data is None:
+                raise RuntimeError("Could not get product data for UID:" + uid)
+
+            real_data["count"] = entry["count"]
+            data.append(real_data)
+
+        return data
+
+    def render(self):
+        """
+        """
+        data = self.data
+
+        data = self.filterProductData(data)
+
+        buf = StringIO()
+        for product in data:
+            print >> buf, product["name"]
+            print >> buf, product["url"]
+            print >> buf, "-" * 76
+            print >> buf, product["description"]
+            print >> buf, ""
+            print >> buf, ""
+
+        return buf.getvalue()
+
+
+class EmailPlan(grok.CodeView):
+    """
+    Email travel planner
+    """
+    grok.name("email-travel-plan")
+    grok.context(ISiteRoot)
+
+    def render(self):
+
+        if self.request["REQUEST_METHOD"] != "POST":
+            raise RuntimeError("Bad method")
+
+        receiver = self.request.form.get("email", None)
+        data = self.request.form["content"]
+
+        generator = GenerateText(self.context, self.request)
+        generator.data = json.loads(data)
+        message = generator()
+
+        mailhost = getToolByName(self.context, 'MailHost')
+        # The `immediate` parameter causes an email to be sent immediately
+        # (if any error is raised) rather than sent at the transaction
+        # boundary or queued for later delivery.
+
+        # Site from address
+        portal = self.context.portal_url.getPortalObject()
+        source = portal.email_from_address
+        # fromname = porta.xxx?
+
+        subject = "Oma Kalajoki Matkasuunnitelmasi"
+
+        try:
+
+            try:
+                logger.info(u"Sending message:" + receiver)
+                logger.info(message)
+            except Exception as e:
+                logger.exception(e)
+
+            mailhost.send(message,
+                        receiver,
+                        source,
+                        subject=subject,
+                        #subtype='plain',
+                        charset="utf-8",
+                        immediate=True)
+        except Exception as e:
+            logger.exception(e)
+            raise
+
+        logger.info("Emailing done")
 

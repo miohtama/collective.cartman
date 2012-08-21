@@ -2,7 +2,7 @@
  * Plone bindings for Eric Cartman
  */
 
-/*global window,Cartman,CartmanUI,cartmanOptions*/
+/*global window,Cartman,CartmanUI,cartmanOptions,console*/
 
 window.getCart = null;
 
@@ -94,6 +94,53 @@ window.getCart = null;
         //TODO: Add this
     }
 
+    function sendEmail() {
+
+        console.log("sendEmail()");
+
+        var email = window.prompt("Anna vastaanottajan sähköpostiosoite:");
+
+        function success(data) {
+            // Got data from the server, proceed ->
+            //
+            $("#checkout-popup .checkout-footer .ajax").remove();
+            //
+            $("#checkout-popup .checkout-footer").append('<dl class="portalMessage info"><dt>Info</dt>' +
+            '<dd>Viesti lähetetty osoitteeseen <b>' + email + '</b>.</dd>' +
+            '</dl>');
+        }
+
+        function fail(jqXHR, textStatus, errorThrown) {
+            var message = jqXHR.statusText || textStatus;
+            $("#checkout-popup .checkout-footer .ajax").remove();
+            console.error(message);
+            window.alert("Matkasuunnitelman lähetys epäonnistui. Tarkistatko sähköpostiosoitteen ja yrität uudelleen.");
+        }
+
+        var data = {
+            email : email,
+            content : cartman.getContentsJSON()
+        };
+
+        // Retrieve list data from a JSON callback
+        // which has been passed us in a global JS helper object
+        function post() {
+            $.ajax({
+              url: window.cartmanOptions.portalURL + "/@@email-travel-plan",
+              data: data,
+              success: success,
+              error : fail,
+              type : "POST" // Bust Varnish cache
+            });
+        }
+
+        $("#checkout-popup .checkout-footer").append('<img class="ajax" src="' + window.cartmanOptions.portalURL + "/spinner.gif" + '" />');
+
+        // Enter async processing
+        post();
+
+    }
+
     function initCartman() {
 
         // No double init
@@ -135,8 +182,8 @@ window.getCart = null;
         // Load cart from localStorage,
         cartman.refreshStore();
 
-        retrofitPloneFormGen();
-
+        // Create email out button
+        $("body").delegate(".emailButton", "click", sendEmail);
     }
 
     // Explose as global
