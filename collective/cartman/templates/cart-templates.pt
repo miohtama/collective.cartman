@@ -45,20 +45,24 @@ to the page body.
                 <thead>
                     <tr>
                         <th><!-- image --></th>
-                        <th> Name </th>
-                        <th> Description </th>
-                        <th class="column-remove-th"> Remove </th>
+                        <th> Nimi </th>
+                        <th> Kuvaus </th>
+                        <th class="column-remove-th"> Poista </th>
                     </tr>
                 </thead>
                 <tbody data-bind="products">
                     <tr class="checkout-line">
                         <td>
-                            <img data-bind="img" />
+                            <a data-bind="img-url">
+                                <img data-bind="product-img" />
+                            </a>
                         </td>
                         <td><a data-bind="name" /></td>
                         <td data-bind="description">
                             <div data-bind="desc"></div>
+                            <!--
                             <div data-bind="url"></div>
+                            -->
                         </td>
                         <td class="column-remove">
                             <span style="color: red">x</span>
@@ -94,7 +98,7 @@ to the page body.
     <div id="checkout-popup-empty-template">
         <a class="close"></a>
         <p class="empty-checkout">
-            No items in the cart
+            Matkasuunnitelmasi on tyhjä
         </p>
     </div>
 

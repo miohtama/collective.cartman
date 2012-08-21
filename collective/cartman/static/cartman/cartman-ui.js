@@ -1,4 +1,4 @@
-/*global jQuery,JSON2,window*/
+/*global jQuery,JSON2,window,console*/
 
 (function($) {
 
@@ -106,7 +106,7 @@
 
             var minicart = $(this.selectors.minicart);
             if(minicart.size() === 0) {
-                console.error("Mini cart missing on the page:" + this.selectors.minicart);
+                //console.error("Mini cart missing on the page:" + this.selectors.minicart);
             }
 
             var checkout = $(this.selectors.checkoutPopup);
@@ -116,6 +116,9 @@
                 self.refreshMiniCart(minicart);
                 self.refreshCheckout(checkout);
             });
+
+            var counterElem = $("#travelplannercounter");
+            counterElem.click(self.openCheckoutPopup);
 
         },
 
@@ -187,14 +190,15 @@
             // update travelplanner counter
             var counterElem = $("#travelplannercounter");
             counterElem.empty();
-            if (source.count > 0) {
-                var counterTemplate = $("#counter-template");
-                counterElem.append(counterTemplate.children().clone());
-                counterElem.render(data);
 
-                counterElem.click(self.openCheckoutPopup);
-            }
+            var counterTemplate = $("#counter-template");
+            counterElem.append(counterTemplate.children().clone());
+            counterElem.render(data, {}, true);
+            console.log("refreshCounter");
+            console.log(data);
 
+
+            // Print plan
             elem.find(".printButton").click(function(e) {
                 $(document.body).addClass("travelplanner-print");
                 $("#checkout-popup").detach().addClass("print").appendTo(document.body);
@@ -204,6 +208,7 @@
 
                 e.preventDefault();
             });
+
             // Bind minicart link to open the checkout dialog
             elem.find(".showButton").click(function(e) {
                 e.preventDefault();
@@ -468,7 +473,7 @@
          * Helper funtion to check if stock saldo is bigger than order amount
          * NOTE! This is not used atmo. We should add unitSize to the logic for this to be usable
          *
-         * @param input Input field which has the item count to add to the basket. 
+         * @param input Input field which has the item count to add to the basket.
          * @param item Item data where we get stock amount and can use to get count of items in the cart
          */
         stockHasItems : function(item, input) {
@@ -531,7 +536,7 @@
 
 
                 var addCountInput = product.find(".add-count");
-                
+
                 //NOTE! This is not used atmo. We should add unitSize to the logic for this to be usable
                 //change event fires only after blur. Also oninput does not work on IE9< so we need the change event too
                 /*addCountInput[0].oninput = function() {

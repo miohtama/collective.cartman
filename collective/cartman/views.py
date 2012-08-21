@@ -118,7 +118,21 @@ class ProductDataExtractor(HelperBaseView):
         data["url"] = self.context.absolute_url()
         data["description"] = self.context.Description()
         data["price"] = self.getPrice()
-        data["img"] = None # URL for the image to be used in checkout list
+
+        if hasattr(context, "image"):
+            img = self.context.absolute_url() + "/@@images/image"
+        elif "leadImage" in context.Schema():
+            # collective.contentleadimage
+            images = self.context.unrestrictedTraverse("@@images")
+            scale = images.scale('leadImage', width=280, height=280)
+            if scale:
+                img = scale.absolute_url()
+            else:
+                img = None
+        else:
+            img = None
+
+        data["img"] = img
 
         return data
 
@@ -159,6 +173,7 @@ class ProductDataExtractor(HelperBaseView):
     def render(self):
         return self.getJSON()
 
+
 class AddToCartHelper(grok.View):
     """
     Subview to render add to cart on a page / viewlet.
@@ -173,6 +188,8 @@ class AddToCartHelper(grok.View):
         context = self.context.aq_inner
 
         extractor = queryMultiAdapter((context, self.request), name="product-data-extractor")
+
+        import pdb ; pdb.set_trace()
 
         if extractor:
             self.extractor = extractor
