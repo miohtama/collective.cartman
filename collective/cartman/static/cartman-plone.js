@@ -134,10 +134,11 @@ window.getCart = null;
             });
         }
 
-        $("#checkout-popup .checkout-footer").append('<img class="ajax" src="' + window.cartmanOptions.portalURL + "/spinner.gif" + '" />');
-
         // Enter async processing
-        post();
+        if(email) {
+            $("#checkout-popup .checkout-footer").append('<img class="ajax" src="' + window.cartmanOptions.portalURL + "/spinner.gif" + '" />');
+            post();
+        }
 
     }
 
