@@ -13,81 +13,6 @@ window.getCart = null;
     var cartman, ui;
 
     /**
-     * If we detect PFG page and a certain field on it
-     *
-     * - Set this fields value to our JSON product payload
-     *
-     * - Print checout list on PFG form (non-editable)
-     */
-    function retrofitPloneFormGen() {
-
-        var field = $(cartmanOptions.productFieldSelector);
-
-        if(field.size() === 0) {
-            return;
-        }
-
-        console.log("Retrofit PFG");
-
-        // Fill in <hidden> input with data to be posted to Plone server
-        var productJSON = cartman.getContentsJSON();
-        field.val(productJSON);
-
-        // Render a <table> containing file product listing
-        // using Transparency
-        var data = ui.getCartTemplateData();
-
-        console.log("Data:");
-        console.log(data);
-
-        // Template directives
-        var directives = {
-
-            // Show empty cart warning
-            'checkout-data-container' : function(elem) {
-                var $elem = $(elem);
-
-                if(cartman.hasContent()) {
-                    $elem.addClass("has-items");
-                } else {
-                    $elem.removeClass("has-items");
-                }
-             },
-
-            // Nested directives for product lines
-            products : {
-                price : function() { return ui.formatPrice(this.price); },
-                total : function() { return ui.formatPrice(this.count*this.price); },
-                // Fill in image column only if image URL is available
-                // Set image source or hide image
-                'product-img' : function(elem) {
-                    elem = $(elem);
-                    if(this.img) {
-                        elem.attr("src", this.img);
-                    } else {
-                        elem.hide();
-                    }
-                }
-            }
-        };
-
-        var listing = $("<div>");
-
-        var template = $(cartmanOptions.checkoutFormTemplateSelector);
-
-        if(template.size() === 0) {
-            throw new Error("Checkout form template missing:" + cartmanOptions.checkoutFormTemplateSelector);
-        }
-
-        listing.append(template.children().clone());
-
-        // Render the template
-        listing.render(data, directives, true);
-
-        listing.insertAfter(field);
-    }
-
-    /**
      * IE7 users need a pop-up because animation does not work
      */
     function onCartAdd() {
@@ -142,6 +67,23 @@ window.getCart = null;
 
     }
 
+    // Patched dialog opener which will display help pop-up if the cart is empty
+    function openCheckoutPopupWithHelp() {
+
+        var cartman = window.getCart().cartman;
+
+        // Show instructions if the cart is empty
+        if(cartman.getContents().length === 0) {
+            var foobar = $(".oma-kalajoki-button-hidden");
+            foobar.click();
+            return;
+        }
+
+        console.log("openCheckoutPopup()");
+        var api = $("#checkout-popup").data("overlay");
+        api.load();
+    }
+
     function initCartman() {
 
         // No double init
@@ -160,6 +102,9 @@ window.getCart = null;
                 addToCartAnimator : ".add-count"
             }
         });
+
+        // Monkey-patch checkout dialog
+        ui.openCheckoutPopup = openCheckoutPopupWithHelp;
 
         // Bootstrap UI
         ui.init();
@@ -186,6 +131,8 @@ window.getCart = null;
         // Create email out button
         $("body").delegate(".emailButton", "click", sendEmail);
     }
+
+
 
     // Explose as global
     window.getCart = function() {
