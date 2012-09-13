@@ -278,6 +278,11 @@ class GenerateText(grok.CodeView):
         data = self.filterProductData(data)
 
         buf = StringIO()
+
+        print >> buf, "Kalajoki – Meren kävijöille"
+        print >> buf, "Tutustu näihin ja muihin Kalajoen merellisiin ihmeisiin osoitteessa http://www.visitkalajoki.fi"
+        print >> buf, ""
+
         for product in data:
             print >> buf, product["name"]
             print >> buf, product["url"]
