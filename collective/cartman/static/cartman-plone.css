@@ -45,6 +45,11 @@ input[type=number] {
         padding: 0;
 }
 
+/* Too long lists become unscrollable otherwise */
+.checkout-popup-scroller {
+    height: 300px;
+    overflow: auto;
+}
 
 .checkout-list {
         width: 100%;
