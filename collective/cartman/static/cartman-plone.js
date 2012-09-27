@@ -82,6 +82,11 @@ window.getCart = null;
         console.log("openCheckoutPopup()");
         var api = $("#checkout-popup").data("overlay");
         api.load();
+
+        if($.browser.msie && $.browser.version == "8.0") {
+            // Close button layout broken in IE8
+            $("#checkout-popup .close").hide();
+        }
     }
 
     function initCartman() {

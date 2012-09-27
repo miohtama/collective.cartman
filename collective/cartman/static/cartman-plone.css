@@ -155,7 +155,6 @@ table.checkout-list thead th {
 #checkout-popup {
     z-index: 15000;
     position: relative;
-    background: magenta;
 }
 
 
