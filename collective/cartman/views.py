@@ -31,7 +31,7 @@ def safe_float(val):
 
     return val
 
-class HelperBaseView(grok.CodeView):
+class HelperBaseView(grok.View):
     """ """
 
     grok.baseclass()

@@ -45,7 +45,7 @@ to the page body.
                             Price
                         </div>
                         <div class=discreet>
-                            (EUR, VAT 23%)
+                            (EUR, VAT 24%)
                         </div></th>
                         <th class="column-count"> Count </th>
                         <th class="column-total">
@@ -53,7 +53,7 @@ to the page body.
                             Total
                         </div>
                         <div class=discreet>
-                            (EUR, VAT 23%)
+                            (EUR, VAT 24%)
                         </div></th>
                         <th> Remove </th>
                     </tr>
