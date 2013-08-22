@@ -4,6 +4,7 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="eric.cartman">
 
   <five:registerPackage package="." initialize=".initialize" />
@@ -11,6 +12,10 @@
   <!-- Grok the package to initialise schema interfaces and content classes -->
   <grok:grok package="." />
 
+ <browser:resourceDirectory
+        name="collective.cartman"
+        directory="static"
+        />
 
   <genericsetup:registerProfile
       name="default"
